@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Viabilidade - Comparativo de Cenários v6.1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Adicionado o plugin de datalabels para as porcentagens -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+        .input-group { @apply flex flex-col mb-3; }
+        label { @apply text-[10px] font-bold text-slate-500 uppercase mb-1 tracking-wider; }
+        input { @apply p-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none transition-all bg-white text-sm; }
+        .card { @apply bg-white p-5 rounded-2xl shadow-sm border border-slate-200; }
+        .highlight-green { @apply border-emerald-300 bg-emerald-50 font-semibold; }
+        th { @apply text-[10px] uppercase tracking-tighter text-slate-400 p-2 text-left; }
+        td { @apply p-2 border-t border-slate-800 text-[11px]; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-6xl mx-auto">
+        <header class="mb-8 border-b pb-6">
+            <h1 class="text-2xl font-black text-slate-900 uppercase italic tracking-tighter">Real Estate Analysis v6.1</h1>
+            <p class="text-slate-500 text-sm">Dashboard Comparativo: Desembolso, Obra e Alavancagem.</p>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- COLUNA INPUTS -->
+            <div class="lg:col-span-4 space-y-4">
+                <div class="card">
+                    <h2 class="text-sm font-black text-indigo-900 mb-4 uppercase italic">1. Parâmetros de Obra</h2>
+                    <div class="input-group"><label>Valor Terreno (R$)</label><input type="number" id="vTerreno" value="250000"></div>
+                    <div class="input-group"><label>Área da Casa (m²)</label><input type="number" id="area" value="150"></div>
+                    <div class="input-group"><label>CUB Médio (R$/m²)</label><input type="number" id="cub" value="2600"></div>
+                    <div class="input-group"><label>Aporte (Cenário Alavancado)</label><input type="number" id="capitalProprio" value="200000" class="highlight-green"></div>
+                </div>
+
+                <div class="card">
+                    <h2 class="text-sm font-black text-indigo-900 mb-4 uppercase italic">2. Ciclo e Financiamento</h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="input-group"><label>Obra (Meses)</label><input type="number" id="prazoObra" value="12"></div>
+                        <div class="input-group"><label>Venda (Meses)</label><input type="number" id="prazoVenda" value="6"></div>
+                    </div>
+                    <div class="input-group"><label>Juros do Banco (% a.a.)</label><input type="number" id="jurosAnual" value="11"></div>
+                </div>
+
+                <div class="card">
+                    <h2 class="text-sm font-black text-indigo-900 mb-4 uppercase italic">3. Expectativa de Saída</h2>
+                    <div class="input-group"><label>Venda Prevista (R$)</label><input type="number" id="venda" value="1100000" class="bg-indigo-50 border-indigo-200"></div>
+                    <div class="input-group"><label>Comissão (%)</label><input type="number" id="pComissao" value="6"></div>
+                </div>
+
+                <button onclick="calcular()" class="w-full bg-slate-900 hover:bg-black text-white font-black py-4 rounded-xl shadow-xl transition-all uppercase tracking-widest text-xs">Simular Comparativo</button>
+            </div>
+
+            <!-- COLUNA RESULTADOS -->
+            <div class="lg:col-span-8 space-y-6">
+                <!-- DASHBOARD RENTABILIDADE -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="card border-l-4 border-l-slate-400">
+                        <h3 class="text-[10px] font-black text-slate-500 uppercase mb-4">Retorno 100% Capital PROPRIO. Total</h3>
+                        <div class="flex justify-between items-end">
+                            <div><span class="text-4xl font-black text-slate-800" id="roiTotal">0%</span><p class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">ROI S/ Financiamento</p></div>
+                            <div class="text-right"><span class="text-xl font-bold text-slate-600" id="roiTotalMensal">0%</span><p class="text-[10px] text-slate-400 uppercase font-bold text-xs">/Mês</p></div>
+                        </div>
+                    </div>
+
+                    <div class="card border-l-4 border-l-emerald-500 bg-emerald-50/30">
+                        <h3 class="text-[10px] font-black text-emerald-600 uppercase mb-4">Retorno Capital Próprio + Financiamento</h3>
+                        <div class="flex justify-between items-end">
+                            <div><span class="text-4xl font-black text-slate-800" id="roeTotal">0%</span><p class="text-[10px] text-slate-400 uppercase font-bold tracking-tighter">ROE Alavancado</p></div>
+                            <div class="text-right"><span class="text-xl font-bold text-emerald-700" id="roeMensal">0%</span><p class="text-[10px] text-slate-400 uppercase font-bold text-xs">/Mês</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- QUADRO COMPARATIVO ATUALIZADO -->
+                <div class="card bg-slate-900 text-white p-6">
+                    <h3 class="text-indigo-400 font-black mb-4 uppercase text-[10px] tracking-widest border-b border-slate-800 pb-2 italic">Resumo de Taxas & Alavancagem (Comparativo de Cenários)</h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr>
+                                    <th>Indicadores e Custos</th>
+                                    <th class="text-right">Cenário 100% Próprio</th>
+                                    <th class="text-right text-indigo-400">Cenário Alavancado</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-slate-300">
+                                <tr class="bg-slate-800/30 font-bold"><td class="text-white">Aporte Inicial (Capital Próprio)</td><td class="text-right text-white" id="tabAporte1">R$ 0</td><td class="text-right text-emerald-400" id="tabAporte2">R$ 0</td></tr>
+                                <tr><td>Custo Total CUB (Obra)</td><td class="text-right" id="tabCub1">R$ 0</td><td class="text-right" id="tabCub2">R$ 0</td></tr>
+                                <tr><td>ITBI + Registro (5% Terreno)</td><td class="text-right" id="tabLegal1">R$ 0</td><td class="text-right" id="tabLegal2">R$ 0</td></tr>
+                                <tr><td>ISS Obra (Est. s/ Mão de Obra)</td><td class="text-right" id="tabISS1">R$ 0</td><td class="text-right" id="tabISS2">R$ 0</td></tr>
+                                <tr><td>INSS Regularização (CND)</td><td class="text-right" id="tabINSS1">R$ 0</td><td class="text-right" id="tabINSS2">R$ 0</td></tr>
+                                <tr><td>Comissão de Venda</td><td class="text-right" id="tabCom1">R$ 0</td><td class="text-right" id="tabCom2">R$ 0</td></tr>
+                                <tr><td class="text-rose-400 font-bold">IR Ganho de Capital (15%)</td><td class="text-right text-rose-400" id="tabIR1">R$ 0</td><td class="text-right text-rose-400" id="tabIR2">R$ 0</td></tr>
+                                <tr><td class="text-amber-400 italic">Juros de Obra (Banco)</td><td class="text-right text-slate-500 italic">R$ 0,00 (Zerar)</td><td class="text-right text-amber-400" id="tabJuros2">R$ 0</td></tr>
+                                <tr class="font-bold text-white bg-slate-800">
+                                    <td class="p-3">CUSTO TOTAL FINAL LÍQUIDO</td>
+                                    <td class="text-right p-3" id="tabTotal1">R$ 0</td>
+                                    <td class="text-right p-3 text-indigo-300" id="tabTotal2">R$ 0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card h-64"><canvas id="chartPizza"></canvas></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chartP;
+        // Registrar o plugin para ser usado em todos os gráficos
+        Chart.register(ChartDataLabels);
+
+        function calcular() {
+            const vTerreno = parseFloat(document.getElementById('vTerreno').value) || 0;
+            const area = parseFloat(document.getElementById('area').value) || 0;
+            const cub = parseFloat(document.getElementById('cub').value) || 0;
+            const capAporteInput = parseFloat(document.getElementById('capitalProprio').value) || 0;
+            const prazoObra = parseFloat(document.getElementById('prazoObra').value) || 1;
+            const prazoVenda = parseFloat(document.getElementById('prazoVenda').value) || 0;
+            const jurosAnual = parseFloat(document.getElementById('jurosAnual').value) / 100 || 0;
+            const vVenda = parseFloat(document.getElementById('venda').value) || 0;
+            const pComissao = parseFloat(document.getElementById('pComissao').value) / 100 || 0;
+
+            const tempoTotal = prazoObra + prazoVenda;
+            const custoObraTotal = area * cub;
+            const valLegal = vTerreno * 0.05;
+            const estMO = custoObraTotal * 0.40;
+            const valISS = estMO * 0.05;
+            const valINSS = estMO * 0.20;
+            const comVenda = vVenda * pComissao;
+
+            const custoBaseOperacional = vTerreno + custoObraTotal + valLegal + valISS + valINSS + comVenda;
+
+            // CENÁRIO 1: 100% PRÓPRIO
+            const lucro100AntesIR = Math.max(0, vVenda - custoBaseOperacional);
+            const ir100 = lucro100AntesIR * 0.15;
+            const custoFinal100 = custoBaseOperacional + ir100;
+            const lucroLiquido100 = vVenda - custoFinal100;
+            const roiTotal = (lucroLiquido100 / custoFinal100) * 100;
+
+            // CENÁRIO 2: ALAVANCADO
+            const saldoFinanciado = Math.max(0, (vTerreno + custoObraTotal + valLegal + valISS + valINSS) - capAporteInput);
+            const jurosObra = (saldoFinanciado * (jurosAnual / 12) * prazoObra) / 2;
+            const custoAntesIR2 = custoBaseOperacional + jurosObra;
+            const lucro2AntesIR = Math.max(0, vVenda - custoAntesIR2);
+            const ir2 = lucro2AntesIR * 0.15;
+            const custoFinal2 = custoAntesIR2 + ir2;
+            const lucroLiquido2 = vVenda - custoFinal2;
+            const roeTotal = (lucroLiquido2 / capAporteInput) * 100;
+
+            // FORMATADOR
+            const f = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            // UPDATE DASHBOARD
+            document.getElementById('roiTotal').innerText = roiTotal.toFixed(1) + '%';
+            document.getElementById('roiTotalMensal').innerText = (roiTotal / tempoTotal).toFixed(2) + '%';
+            document.getElementById('roeTotal').innerText = roeTotal.toFixed(1) + '%';
+            document.getElementById('roeMensal').innerText = (roeTotal / tempoTotal).toFixed(2) + '%';
+
+            // UPDATE TABELA
+            document.getElementById('tabAporte1').innerText = f(custoFinal100); 
+            document.getElementById('tabAporte2').innerText = f(capAporteInput);
+            document.getElementById('tabCub1').innerText = f(custoObraTotal);
+            document.getElementById('tabCub2').innerText = f(custoObraTotal);
+            document.getElementById('tabLegal1').innerText = f(valLegal);
+            document.getElementById('tabLegal2').innerText = f(valLegal);
+            document.getElementById('tabISS1').innerText = f(valISS);
+            document.getElementById('tabISS2').innerText = f(valISS);
+            document.getElementById('tabINSS1').innerText = f(valINSS);
+            document.getElementById('tabINSS2').innerText = f(valINSS);
+            document.getElementById('tabCom1').innerText = f(comVenda);
+            document.getElementById('tabCom2').innerText = f(comVenda);
+            document.getElementById('tabIR1').innerText = f(ir100);
+            document.getElementById('tabIR2').innerText = f(ir2);
+            document.getElementById('tabJuros2').innerText = f(jurosObra);
+            document.getElementById('tabTotal1').innerText = f(custoFinal100);
+            document.getElementById('tabTotal2').innerText = f(custoFinal2);
+
+            atualizarGrafico(capAporteInput, saldoFinanciado, jurosObra, (valLegal + valISS + valINSS + ir2 + comVenda));
+        }
+
+        function atualizarGrafico(cap, fin, j, taxas) {
+            const ctx = document.getElementById('chartPizza').getContext('2d');
+            if (chartP) chartP.destroy();
+            chartP = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Capital Próprio', 'Financiamento', 'Juros Obra', 'Tributos/Venda'],
+                    datasets: [{
+                        data: [cap, fin, j, taxas],
+                        backgroundColor: ['#10b981', '#6366f1', '#f59e0b', '#f43f5e'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { 
+                    maintainAspectRatio: false, 
+                    plugins: { 
+                        legend: { position: 'right', labels: { color: '#64748b', font: { size: 10 } } },
+                        // Configuração do plugin de porcentagem
+                        datalabels: {
+                            color: '#fff',
+                            font: { weight: 'bold', size: 11 },
+                            formatter: (value, ctx) => {
+                                let sum = 0;
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                dataArr.map(data => { sum += data; });
+                                let percentage = (value * 100 / sum).toFixed(1) + "%";
+                                return value > 0 ? percentage : ''; // Só mostra se for maior que zero
+                            }
+                        }
+                    } 
+                }
+            });
+        }
+
+        window.onload = calcular;
+    </script>
+</body>
+</html>
