@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Estate Investor Analysis v10.5 - Base Ampliada</title>
+    <title>Real Estate Investor Analysis v10.8</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -27,11 +27,11 @@
     <div class="max-w-7xl mx-auto">
         <header class="mb-10 flex justify-between items-end border-b border-slate-200 pb-8">
             <div>
-                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter text-blue-600">Investment Analysis v10.5</h1>
-                <p class="text-slate-500 text-sm font-medium italic">Simulador Profissional: Viabilidade, Regularização e Alavancagem</p>
+                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter text-blue-600">Investment Analysis v10.8</h1>
+                <p class="text-slate-500 text-sm font-medium italic">Simulador Profissional: Engenharia de Fluxo e Auditoria Fiscal</p>
             </div>
             <div class="text-right hidden md:block">
-                <span class="bg-blue-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest">Master View</span>
+                <span class="bg-blue-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest italic">Full Engineering Disclosure</span>
             </div>
         </header>
 
@@ -76,7 +76,7 @@
                         <div class="input-group"><label>Comissão (%)</label><input type="number" id="pComissao" value="6"></div>
                         <div class="input-group">
                             <label>Regime Fiscal</label>
-                            <select id="regimeTributario" class="text-xs font-bold border-emerald-100">
+                            <select id="regimeTributario" class="text-xs font-bold">
                                 <option value="PJ">PJ - RET (4%)</option>
                                 <option value="PF">PF - Ganho Cap (15%)</option>
                             </select>
@@ -89,23 +89,14 @@
 
             <div class="lg:col-span-8 space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center font-black uppercase tracking-tighter">
-                    <div class="card border-b-4 border-b-blue-600">
-                        <h3 class="kpi-title">Múltiplo (MoC)</h3>
-                        <div class="kpi-value" id="resMoc">0.0x</div>
-                    </div>
-                    <div class="card border-b-4 border-b-emerald-500">
-                        <h3 class="kpi-title">TIR Mensal</h3>
-                        <div class="kpi-value text-emerald-600" id="resTir">0%</div>
-                    </div>
-                    <div class="card border-b-4 border-b-slate-900">
-                        <h3 class="kpi-title">VMD / m²</h3>
-                        <div class="kpi-value" id="resVmd">R$ 0</div>
-                    </div>
+                    <div class="card border-b-4 border-b-blue-600"><h3 class="kpi-title">Múltiplo (MoC)</h3><div class="kpi-value" id="resMoc">0.0x</div></div>
+                    <div class="card border-b-4 border-b-emerald-500"><h3 class="kpi-title">TIR Mensal</h3><div class="kpi-value text-emerald-600" id="resTir">0%</div></div>
+                    <div class="card border-b-4 border-b-slate-900"><h3 class="kpi-title">VMD / m²</h3><div class="kpi-value" id="resVmd">R$ 0</div></div>
                 </div>
 
                 <div id="statusCard" class="card transition-all duration-500 border-l-8 bg-white p-6 shadow-xl">
                     <div class="flex justify-between items-center">
-                        <div class="flex flex-col">
+                        <div>
                             <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Status de Viabilidade vs TMA</h3>
                             <div id="statusText" class="text-xl font-black uppercase italic tracking-tighter text-slate-800">Aguardando...</div>
                         </div>
@@ -124,18 +115,18 @@
                     <div class="bg-slate-900 p-5 flex justify-between items-center text-white font-bold uppercase text-[10px] tracking-widest italic">Análise de Fluxo e Tributação</div>
                     <div class="p-2 overflow-x-auto">
                         <table class="w-full text-slate-800">
-                            <thead><tr><th>Item</th><th class="text-right">Valor</th><th class="text-right">% s/ Venda</th></tr></thead>
+                            <thead><tr><th>Item de Operação</th><th class="text-right">Valor</th><th class="text-right">% s/ Venda</th></tr></thead>
                             <tbody id="resumoTabela">
-                                <tr class="bg-slate-50 font-bold"><td>RECEITA BRUTA ESTIMADA (VGV)</td><td class="text-right" id="tabReceita">-</td><td class="text-right">100%</td></tr>
+                                <tr class="bg-slate-50 font-bold"><td>RECEITA BRUTA ESTIMADA</td><td class="text-right" id="tabReceita">-</td><td class="text-right">100%</td></tr>
                                 <tr><td>Terreno e Escrituração</td><td class="text-right" id="tabTerreno">-</td><td class="text-right" id="pTerreno">-</td></tr>
                                 <tr><td>Custo Mão de Obra Total</td><td class="text-right" id="tabObra">-</td><td class="text-right" id="pObra">-</td></tr>
-                                <tr class="bg-rose-50/40 text-[11px] italic"><td>ISS (3%)</td><td class="text-right" id="tabISS">-</td><td class="text-right" id="pISS">-</td></tr>
-                                <tr class="bg-rose-50/40 text-[11px] italic"><td>INSS (6%)</td><td class="text-right" id="tabINSS">-</td><td class="text-right" id="pINSS">-</td></tr>
-                                <tr class="bg-rose-50/40 text-[11px] italic"><td>Taxas de Regularização</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
-                                <tr class="highlight-fin"><td>PRINCIPAL FINANCIADO (Saldo Devedor)</td><td class="text-right" id="tabFinancPrincipal">-</td><td class="text-right" id="pFinancPrincipal">-</td></tr>
-                                <tr class="italic text-amber-700"><td>Juros de Obra (Construção)</td><td class="text-right" id="tabJurosObra">-</td><td class="text-right" id="pJurosObra">-</td></tr>
-                                <tr class="italic text-amber-700"><td>Juros SAC (Estoque/Espera)</td><td class="text-right" id="tabJurosVenda">-</td><td class="text-right" id="pJurosVenda">-</td></tr>
-                                <tr><td>Corretagem e Holding</td><td class="text-right" id="tabCom">-</td><td class="text-right" id="pCom">-</td></tr>
+                                <tr class="bg-rose-50/40 italic"><td>ISS de Obra (3%)</td><td class="text-right" id="tabISS">-</td><td class="text-right" id="pISS">-</td></tr>
+                                <tr class="bg-rose-50/40 italic"><td>INSS de Obra (6%)</td><td class="text-right" id="tabINSS">-</td><td class="text-right" id="pINSS">-</td></tr>
+                                <tr class="bg-rose-50/40 italic"><td>Taxas de Regularização (Adm)</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
+                                <tr class="highlight-fin"><td>PRINCIPAL FINANCIADO</td><td class="text-right" id="tabFinancPrincipal">-</td><td class="text-right" id="pFinancPrincipal">-</td></tr>
+                                <tr class="italic text-amber-700"><td>Juros de Obra</td><td class="text-right" id="tabJurosObra">-</td><td class="text-right" id="pJurosObra">-</td></tr>
+                                <tr class="italic text-amber-700"><td>Juros SAC (Estoque)</td><td class="text-right" id="tabJurosVenda">-</td><td class="text-right" id="pJurosVenda">-</td></tr>
+                                <tr><td>Corretagem e Funcionamento</td><td class="text-right" id="tabCom">-</td><td class="text-right" id="pCom">-</td></tr>
                                 <tr class="highlight-tax"><td id="descImposto">Imposto Final</td><td class="text-right" id="tabImposto">-</td><td class="text-right" id="pImposto">-</td></tr>
                                 <tr class="bg-blue-600 font-black text-white text-base"><td>LUCRO LÍQUIDO FINAL</td><td class="text-right" id="tabLucro">-</td><td class="text-right" id="pLucro">-</td></tr>
                             </tbody>
@@ -150,7 +141,7 @@
                     </div>
                     <div class="card bg-investor text-white h-80 flex flex-col justify-between shadow-2xl">
                         <div>
-                            <h3 class="text-[10px] font-black uppercase mb-4 text-blue-300 tracking-widest text-center border-b border-white/10 pb-2 italic text-justify">ROE (Retorno sobre Capital Próprio)</h3>
+                            <h3 class="text-[10px] font-black uppercase mb-4 text-blue-300 tracking-widest text-center border-b border-white/10 pb-2 italic">ROE (Lucro s/ Equity)</h3>
                             <div class="grid grid-cols-2 gap-4 mt-6">
                                 <div class="text-center border-r border-white/10">
                                     <p class="text-[9px] opacity-70 uppercase font-bold mb-1">Cenário Alavancado</p>
@@ -171,49 +162,78 @@
             </div>
         </div>
 
-        <div class="max-w-7xl mx-auto mt-12 mb-20 p-8 bg-white border border-slate-200 rounded-3xl shadow-sm font-sans">
-            <div class="flex items-center gap-3 mb-8 border-b pb-4 border-slate-100">
-                <div class="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
-                    <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="max-w-7xl mx-auto mt-12 mb-20 p-10 bg-white border border-slate-200 rounded-[3rem] shadow-sm font-sans">
+            <div class="flex items-center gap-4 mb-10 border-b pb-6 border-slate-100">
+                <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 </div>
                 <div>
-                    <h2 class="text-xl font-black text-slate-900 uppercase tracking-tighter italic">Memória de Cálculo & Auditoria de Performance</h2>
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Detalhamento Técnico de Viabilidade</p>
+                    <h2 class="text-2xl font-black text-slate-900 uppercase tracking-tighter italic">Memorial Descritivo & Auditoria de Performance</h2>
+                    <p class="text-[10px] text-blue-600 font-black uppercase tracking-[0.2em]">Versão Técnica de Auditoria v10.8</p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
-                <div class="space-y-6">
-                    <div>
-                        <h4 class="text-xs font-black text-indigo-600 uppercase mb-2 tracking-widest underline decoration-2">1. Múltiplo de Capital (MoC)</h4>
-                        <p class="text-[11px] leading-relaxed text-slate-600 text-justify">Calculado pela fórmula <code class="bg-slate-100 px-1 rounded">(Lucro Líquido + Equity) / Equity</code>. Indica quantas vezes o seu capital inicial "girou". Ex: 1.5x significa que você recuperou seus 100% e ganhou mais 50% de lucro líquido sobre o aporte.</p>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-black text-indigo-600 uppercase mb-2 tracking-widest underline decoration-2">2. Isolamento Financeiro (Lógica de Juros)</h4>
-                        <p class="text-[11px] leading-relaxed text-slate-600 text-justify italic">"Juros sobre o Ativo, não sobre o Resultado."</p>
-                        <p class="text-[11px] leading-relaxed text-slate-600 text-justify">Diferente de modelos genéricos, os juros incidem **exclusivamente** sobre o capital financiado para a produção (Terreno + Obra + Impostos de Regularização). Custos de venda (Corretagem) e Imposto de Renda não geram juros bancários, pois são liquidados apenas no ato da receita.</p>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-black text-indigo-600 uppercase mb-2 tracking-widest underline decoration-2">3. VMD / m²</h4>
-                        <p class="text-[11px] leading-relaxed text-slate-600 text-justify">Valor de Mercado Disponível por metro quadrado. É o balizador que valida se o seu preço de venda está condizente com a realidade da região, garantindo a liquidez do projeto.</p>
-                    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 text-[11px] text-slate-600 leading-relaxed">
+                <div class="space-y-8">
+                    <section>
+                        <h4 class="flex items-center gap-2 font-black text-blue-600 uppercase mb-3 tracking-widest">
+                            <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 1. Engenharia de Capital (Juros)
+                        </h4>
+                        <p class="text-justify mb-2">A base de cálculo dos encargos financeiros é rigorosamente restrita ao <strong>Custo do Ativo</strong>. Os juros incidem apenas sobre o capital de terceiros necessário para a <em>fábrica</em> (Terreno + Mão de Obra + Regularização).</p>
+                        <ul class="space-y-1 bg-slate-50 p-3 rounded-xl border border-slate-100 italic">
+                            <li><strong>Juros em Obra:</strong> Média do Saldo Devedor considerando desembolso progressivo.</li>
+                            <li><strong>Juros em Estoque:</strong> Aplicação do Sistema de Amortização Constante (SAC), reduzindo a base tributável mensalmente conforme o prazo de financiamento.</li>
+                        </ul>
+                    </section>
+
+                    <section>
+                        <h4 class="flex items-center gap-2 font-black text-blue-600 uppercase mb-3 tracking-widest">
+                            <span class="w-1.5 h-1.5 bg-blue-600 rounded-full"></span> 2. Manutenção e Holding (OpEx)
+                        </h4>
+                        <p class="text-justify">Diferente de cálculos de ROI simples, esta planilha provisiona o <strong>Custo de Carregamento</strong>. Estima-se R$ 1.500,00/mês para despesas fixas (IPTU, condomínio, vigilância, energia) multiplicados pelo ciclo total (Obra + Venda), além da comissão de 6% sobre o VGV.</p>
+                    </section>
                 </div>
 
-                <div class="space-y-6">
-                    <div>
-                        <h4 class="text-xs font-black text-amber-600 uppercase mb-2 tracking-widest underline decoration-2">4. Amortização SAC (Engenharia de Estoque)</h4>
-                        <p class="text-[11px] leading-relaxed text-slate-600 text-justify">Durante o período de venda (estoque), o modelo simula o pagamento mensal do principal via **Prazo de Financiamento**. Isso reduz o saldo devedor mês a mês, fazendo com que o custo de carregamento bancário seja decrescente e muito mais realista que o juro simples.</p>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-black text-amber-600 uppercase mb-2 tracking-widest underline decoration-2">5. TMA & Faróis de Decisão</h4>
-                        <p class="text-[11px] leading-relaxed text-slate-600 text-justify">A "régua" do investidor. Composta pelo custo de oportunidade (Selic) + prêmio de risco. O semáforo aplica as seguintes regras automáticas:</p>
-                        <ul class="text-[10px] space-y-3 mt-3">
-                            <li class="flex gap-2"><span class="w-3 h-3 bg-emerald-500 rounded-full mt-0.5 shrink-0"></span><span><strong>VERDE (Lucro Real):</strong> TIR > TMA. O projeto supera a meta de retorno e remunera o risco.</span></li>
-                            <li class="flex gap-2"><span class="w-3 h-3 bg-amber-500 rounded-full mt-0.5 shrink-0"></span><span><strong>AMARELO (Moderado):</strong> TIR está entre a Selic e a TMA. Ganho marginal, prêmio de risco baixo.</span></li>
-                            <li class="flex gap-2"><span class="w-3 h-3 bg-rose-500 rounded-full mt-0.5 shrink-0"></span><span><strong>VERMELHO (Inviável):</strong> TIR < Selic. A renda fixa rende mais com risco zero. Projeto rejeitado.</span></li>
-                        </ul>
-                    </div>
+                <div class="space-y-8">
+                    <section>
+                        <h4 class="flex items-center gap-2 font-black text-amber-600 uppercase mb-3 tracking-widest">
+                            <span class="w-1.5 h-1.5 bg-amber-600 rounded-full"></span> 3. Estratégia Tributária
+                        </h4>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="p-3 border border-slate-100 rounded-xl">
+                                <p class="font-bold text-slate-800 mb-1 underline">Regime PJ (RET)</p>
+                                <p>Incidência de 4% sobre a Receita Bruta Total. Recomendado para VGV acima de 15% de margem.</p>
+                            </div>
+                            <div class="p-3 border border-slate-100 rounded-xl">
+                                <p class="font-bold text-slate-800 mb-1 underline">Regime PF</p>
+                                <p>Incidência de 15% sobre o Lucro Líquido Real (Receita - Custos - Juros - Taxas).</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="p-6 bg-slate-900 rounded-[2rem] text-white shadow-2xl relative overflow-hidden">
+                        <h4 class="font-black text-amber-400 uppercase mb-4 tracking-widest">Protocolo de Decisão (Faróis TMA)</h4>
+                        <div class="space-y-4">
+                            <div class="flex gap-4">
+                                <div class="w-2 h-12 bg-emerald-500 rounded-full shrink-0"></div>
+                                <div><p class="font-bold text-emerald-400 uppercase text-[10px]">Aprovado (Lucro Real)</p><p class="text-[9px] opacity-70">A TIR supera a taxa mínima e remunera o risco imobiliário de forma atrativa.</p></div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-2 h-12 bg-amber-500 rounded-full shrink-0"></div>
+                                <div><p class="font-bold text-amber-400 uppercase text-[10px]">Alerta (Risco Marginal)</p><p class="text-[9px] opacity-70">TIR positiva, mas o prêmio de risco é baixo em relação ao esforço operacional.</p></div>
+                            </div>
+                            <div class="flex gap-4">
+                                <div class="w-2 h-12 bg-rose-500 rounded-full shrink-0"></div>
+                                <div><p class="font-bold text-rose-400 uppercase text-[10px]">Inviável (Custo de Oportunidade)</p><p class="text-[9px] opacity-70">O projeto rende menos que a SELIC. Recomenda-se manter capital em Renda Fixa.</p></div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
+            </div>
+            
+            <div class="mt-10 pt-8 border-t border-slate-100 flex justify-between items-center opacity-50 text-[9px] font-bold uppercase tracking-widest">
+                <span>Engenharia Financeira Aplicada</span>
+                <span>Real Estate Analysis Framework</span>
             </div>
         </div>
     </div>
@@ -238,7 +258,6 @@
                 const prazoTotalFinan = parseFloat(document.getElementById('prazoTotalMeses').value) || 1;
                 const regime = document.getElementById('regimeTributario').value;
 
-                // 1. CUSTOS DE PRODUÇÃO
                 const custoMaoObra = area * cub;
                 const taxasAquisicao = vTerreno * 0.05;
                 const regISS = custoMaoObra * 0.03;
@@ -247,7 +266,6 @@
                 const totalRegularizacao = regISS + regINSS + regTaxasAdm;
                 const baseAtivo = vTerreno + taxasAquisicao + custoMaoObra + totalRegularizacao;
 
-                // 2. FINANCIAMENTO
                 const sdInicial = Math.max(0, baseAtivo - capAporte);
                 const jMensal = jurosAnual / 12;
                 const jObra = (sdInicial * jMensal * prazoObra) / 2;
@@ -261,28 +279,22 @@
                 }
                 const jurosTotais = jObra + jEstoque;
 
-                // 3. FUNCIONAMENTO E HOLDING
                 const comVenda = vVenda * pComissao;
                 const custoHolding = 1500 * (prazoObra + prazoVenda); 
                 const totalFuncionamento = comVenda + custoHolding;
 
-                // 4. IMPOSTOS
                 let impFinal = 0;
-                const custoTotalParaDeducao = baseAtivo + jurosTotais + totalFuncionamento;
+                const custoParaDeducao = baseAtivo + jurosTotais + totalFuncionamento;
                 if(regime === "PJ") { impFinal = vVenda * 0.04; }
-                else { impFinal = Math.max(0, (vVenda - custoTotalParaDeducao) * 0.15); }
+                else { impFinal = Math.max(0, (vVenda - custoParaDeducao) * 0.15); }
 
-                // 5. MÉTRICAS FINAIS
-                const lucroLiq = vVenda - (custoTotalParaDeducao + impFinal);
+                const lucroLiq = vVenda - (custoParaDeducao + impFinal);
                 const roeFinanc = (lucroLiq / capAporte) * 100;
-                const tempoCiclo = prazoObra + prazoVenda;
-                const tirM = (Math.pow(1 + (roeFinanc / 100), 1 / tempoCiclo) - 1) * 100;
+                const tempoTotal = prazoObra + prazoVenda;
+                const tirM = (Math.pow(1 + (roeFinanc / 100), 1 / tempoTotal) - 1) * 100;
 
-                const imp100 = (regime === "PJ") ? vVenda * 0.04 : Math.max(0, (vVenda - (baseAtivo + totalFuncionamento)) * 0.15);
-                const lucro100 = vVenda - (baseAtivo + totalFuncionamento + imp100);
-                const roi100 = (lucro100 / baseAtivo) * 100;
+                const roi100 = ((vVenda - (baseAtivo + totalFuncionamento + (regime === "PJ" ? vVenda * 0.04 : Math.max(0, (vVenda - (baseAtivo + totalFuncionamento)) * 0.15)))) / baseAtivo) * 100;
 
-                // 6. UI UPDATES
                 const f = (v) => v.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'});
                 const p = (v) => ((v / vVenda) * 100).toFixed(1) + '%';
 
@@ -312,14 +324,14 @@
 
                 const card = document.getElementById('statusCard');
                 const stxt = document.getElementById('statusText');
-                const sMenRef = (Math.pow(1 + selicAnual, 1/12) - 1) * 100;
+                const sMen = (Math.pow(1 + selicAnual, 1/12) - 1) * 100;
                 
                 if(tirM > tma) {
                     card.className = "card border-l-8 border-emerald-500 bg-emerald-50 p-6 shadow-xl";
                     stxt.innerText = "Projeto Altamente Atrativo";
-                } else if (tirM < sMenRef) {
+                } else if (tirM < sMen) {
                     card.className = "card border-l-8 border-rose-500 bg-rose-50 p-6 shadow-xl";
-                    stxt.innerText = "Inviável (Perde para Selic)";
+                    stxt.innerText = "Inviável (Renda Fixa rende mais)";
                 } else {
                     card.className = "card border-l-8 border-amber-500 bg-amber-50 p-6 shadow-xl";
                     stxt.innerText = "Atratividade Moderada";
@@ -333,7 +345,7 @@
                 chartP = new Chart(ctx, {
                     type: 'doughnut',
                     data: {
-                        labels: ['Aporte Equity', 'Dívida Principal', 'Encargos Banco', 'Operacional/Fis.'],
+                        labels: ['Equity', 'Financiado', 'Juros', 'Taxas/Op.'],
                         datasets: [{
                             data: [capAporte, sdInicial, jurosTotais, (impFinal + totalFuncionamento + totalRegularizacao + taxasAquisicao)],
                             backgroundColor: ['#2563eb', '#93c5fd', '#f59e0b', '#f43f5e'],
@@ -354,8 +366,8 @@
                             }
                         }
                     }
-                });
-            } catch (e) { console.error("Erro no cálculo: ", e); }
+                } );
+            } catch (e) { console.error("Erro: ", e); }
         }
         
         window.addEventListener('load', () => {
