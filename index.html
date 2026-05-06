@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Estate Investor Analysis v9.5</title>
+    <title>Real Estate Investor Analysis v9.6</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -27,11 +27,11 @@
     <div class="max-w-7xl mx-auto">
         <header class="mb-10 flex justify-between items-end border-b border-slate-200 pb-8">
             <div>
-                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">Investment Analysis <span class="text-blue-600">v9.5</span></h1>
-                <p class="text-slate-500 text-sm font-medium">Análise de Viabilidade com Provisionamento de ISS, INSS e Taxas de Obra</p>
+                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter text-blue-600">Investment Analysis v9.6</h1>
+                <p class="text-slate-500 text-sm font-medium">Viabilidade com Provisionamento Fiscal e Alavancagem Financeira</p>
             </div>
             <div class="text-right hidden md:block">
-                <span class="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Full Tax Disclosure</span>
+                <span class="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest italic">Capital Disclosure Mode</span>
             </div>
         </header>
 
@@ -46,7 +46,7 @@
                         <div class="input-group"><label>Área (m²)</label><input type="number" id="area" value="150"></div>
                         <div class="input-group"><label>CUB (R$/m²)</label><input type="number" id="cub" value="2600"></div>
                     </div>
-                    <div class="input-group"><label>Capital Próprio (Aporte)</label><input type="number" id="capitalProprio" value="350000" class="border-blue-200 bg-blue-50"></div>
+                    <div class="input-group"><label>Capital Próprio (Aporte)</label><input type="number" id="capitalProprio" value="350000" class="border-blue-200 bg-blue-50 font-bold"></div>
                 </div>
 
                 <div class="card">
@@ -59,7 +59,7 @@
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div class="input-group"><label>Juros Finan. (% a.a.)</label><input type="number" id="jurosAnual" value="11.5"></div>
-                        <div class="input-group"><label>Prazo Finan.</label><input type="number" id="prazoTotalMeses" value="360"></div>
+                        <div class="input-group"><label>Prazo Finan. (Total)</label><input type="number" id="prazoTotalMeses" value="360"></div>
                     </div>
                     <div class="input-group">
                         <label>Regime Tributário (Saída)</label>
@@ -70,9 +70,9 @@
                     </div>
                 </div>
 
-                <div class="card">
+                <div class="card border-emerald-100 bg-emerald-50/20">
                     <h2 class="text-xs font-black text-blue-900 mb-5 uppercase italic flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 3. Comercialização
+                        <span class="w-2 h-2 bg-emerald-600 rounded-full"></span> 3. Comercialização
                     </h2>
                     <div class="input-group"><label>Venda Prevista (R$)</label><input type="number" id="venda" value="1250000" class="bg-emerald-50 border-emerald-200"></div>
                     <div class="input-group"><label>Corretagem (%)</label><input type="number" id="pComissao" value="6"></div>
@@ -97,9 +97,9 @@
                     </div>
                 </div>
 
-                <div class="card overflow-hidden p-0">
+                <div class="card overflow-hidden p-0 border-slate-300">
                     <div class="bg-slate-900 p-5 flex justify-between items-center">
-                        <h3 class="text-white font-bold uppercase text-[10px] tracking-widest italic">Análise de Custos, Taxas e Impostos</h3>
+                        <h3 class="text-white font-bold uppercase text-[10px] tracking-widest italic">Análise Detalhada de Fluxo e Tributação</h3>
                     </div>
                     <div class="p-2 overflow-x-auto">
                         <table class="w-full text-slate-800 border-collapse">
@@ -115,23 +115,23 @@
                                 <tr><td>Terreno e Escrituração (ITBI + Reg)</td><td class="text-right" id="tabTerreno">-</td><td class="text-right" id="pTerreno">-</td></tr>
                                 <tr><td>Custo Mão de Obra Total</td><td class="text-right" id="tabObra">-</td><td class="text-right" id="pObra">-</td></tr>
                                 
-                                <tr class="bg-rose-50/30"><td>ISS de Obra (Estimativa 3%)</td><td class="text-right" id="tabISS">-</td><td class="text-right" id="pISS">-</td></tr>
-                                <tr class="bg-rose-50/30"><td>INSS de Obra (Aferição CND 6%)</td><td class="text-right" id="tabINSS">-</td><td class="text-right" id="pINSS">-</td></tr>
-                                <tr class="bg-rose-50/30"><td>Taxas de Regularização (Alvará/Habite-se)</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
+                                <tr class="bg-rose-50/30 italic"><td>ISS de Obra (Est. Municipal 3%)</td><td class="text-right" id="tabISS">-</td><td class="text-right" id="pISS">-</td></tr>
+                                <tr class="bg-rose-50/30 italic"><td>INSS de Obra (CND Aferição 6%)</td><td class="text-right" id="tabINSS">-</td><td class="text-right" id="pINSS">-</td></tr>
+                                <tr class="bg-rose-50/30 italic"><td>Taxas Administrativas de Regularização</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
 
                                 <tr class="highlight-fin">
                                     <td>VALOR TOTAL DO FINANCIAMENTO (Principal)</td>
                                     <td class="text-right" id="tabFinancPrincipal">-</td>
                                     <td class="text-right" id="pFinancPrincipal">-</td>
                                 </tr>
-                                <tr class="italic text-amber-700"><td>Juros de Obra (Construção)</td><td class="text-right" id="tabJurosObra">-</td><td class="text-right" id="pJurosObra">-</td></tr>
-                                <tr class="italic text-amber-700"><td>Juros s/ Amortização (Estoque)</td><td class="text-right" id="tabJurosVenda">-</td><td class="text-right" id="pJurosVenda">-</td></tr>
+                                <tr class="italic text-amber-700"><td>Juros de Obra (Evolução de Construção)</td><td class="text-right" id="tabJurosObra">-</td><td class="text-right" id="pJurosObra">-</td></tr>
+                                <tr class="italic text-amber-700"><td>Juros SAC (Carregamento de Estoque)</td><td class="text-right" id="tabJurosVenda">-</td><td class="text-right" id="pJurosVenda">-</td></tr>
                                 <tr><td>Corretagem e Marketing</td><td class="text-right" id="tabCom">-</td><td class="text-right" id="pCom">-</td></tr>
-                                <tr class="highlight-tax"><td id="descImposto font-black">Imposto sobre Ganho</td><td class="text-right" id="tabImposto">-</td><td class="text-right" id="pImposto">-</td></tr>
+                                <tr class="highlight-tax"><td id="descImposto" class="font-black">Imposto Estimado</td><td class="text-right" id="tabImposto">-</td><td class="text-right" id="pImposto">-</td></tr>
                                 
                                 <tr class="bg-blue-600 font-black text-white">
                                     <td>LUCRO LÍQUIDO FINAL</td>
-                                    <td class="text-right text-base" id="tabLucro">-</td>
+                                    <td class="text-right text-base font-black" id="tabLucro">-</td>
                                     <td class="text-right" id="pLucro">-</td>
                                 </tr>
                             </tbody>
@@ -141,14 +141,14 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                     <div class="card h-80 text-center">
-                        <h3 class="kpi-title mb-4">Divisão da Exposição de Capital</h3>
+                        <h3 class="kpi-title mb-4">Composição de Capital (%)</h3>
                         <div class="relative h-64">
                             <canvas id="chartInvestor"></canvas>
                         </div>
                     </div>
-                    <div class="card bg-investor text-white h-80 flex flex-col justify-between">
+                    <div class="card bg-investor text-white h-80 flex flex-col justify-between border-none shadow-2xl">
                         <div>
-                            <h3 class="text-[10px] font-black uppercase mb-4 text-blue-300 tracking-widest text-center border-b border-white/10 pb-2">Comparativo de Eficiência (ROE)</h3>
+                            <h3 class="text-[10px] font-black uppercase mb-4 text-blue-300 tracking-widest text-center border-b border-white/10 pb-2 italic">Análise de Eficiência (ROE)</h3>
                             <div class="grid grid-cols-2 gap-4 mt-6">
                                 <div class="text-center border-r border-white/10">
                                     <p class="text-[9px] opacity-70 uppercase font-bold mb-1">Cenário Alavancado</p>
@@ -161,8 +161,8 @@
                             </div>
                         </div>
                         <div class="pt-4 border-t border-white/10 text-center">
-                            <p class="text-[10px] opacity-70 uppercase font-bold mb-1">Diferencial de Ganho Bruto</p>
-                            <p class="text-xl font-bold text-emerald-400" id="resDiff">+0%</p>
+                            <p class="text-[10px] opacity-70 uppercase font-bold mb-1 tracking-widest">Diferencial de Ganho Bruto</p>
+                            <p class="text-xl font-black text-emerald-400" id="resDiff">+0%</p>
                         </div>
                     </div>
                 </div>
@@ -171,22 +171,22 @@
     </div>
 
     <div class="max-w-7xl mx-auto mt-12 mb-20 p-8 bg-slate-100 border border-slate-200 rounded-3xl font-sans shadow-inner">
-        <h2 class="text-lg font-black text-slate-900 uppercase tracking-tighter mb-6 border-b pb-4">Memória de Cálculo e Regras Fiscais</h2>
+        <h2 class="text-lg font-black text-slate-900 uppercase tracking-tighter mb-6 border-b pb-4 italic">Memória de Cálculo e Auditoria Fiscal</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 text-[11px] text-slate-600">
             <div>
-                <p class="font-bold text-slate-800 uppercase mb-2">Composição de Impostos e Taxas:</p>
+                <p class="font-bold text-slate-800 uppercase mb-2 underline decoration-blue-500 decoration-2">Detalhamento dos Tributos de Obra:</p>
                 <ul class="space-y-2 leading-relaxed">
-                    <li><strong class="text-slate-900">ISS de Obra:</strong> Estimado em 3% sobre o Custo Mão de Obra Total. Refere-se ao imposto municipal para liberação do Habite-se.</li>
-                    <li><strong class="text-slate-900">INSS de Obra:</strong> Estimado em 6% sobre o Custo Mão de Obra Total. Baseado na aferição indireta da Receita Federal para emissão da CND.</li>
-                    <li><strong class="text-slate-900">Taxas Adm:</strong> Provisão fixa de R$ 5.000 para taxas de cartório, alvarás e certidões municipais.</li>
-                    <li><strong class="text-slate-900">Regime PF:</strong> Alíquota de 15% sobre o lucro líquido (Venda - Custos Diretos - Juros - Impostos de Obra).</li>
+                    <li><strong class="text-slate-900">ISS (Serviços):</strong> Alíquota de 3% sobre o Custo de Mão de Obra. Custo municipal mandatório para obtenção do Habite-se.</li>
+                    <li><strong class="text-slate-900">INSS (Previdenciário):</strong> Alíquota de 6% sobre o Custo de Mão de Obra (Aferição Indireta). Necessário para emissão da CND da Receita Federal.</li>
+                    <li><strong class="text-slate-900">Taxas Adm:</strong> Provisão fixa de R$ 5.000 (Alvarás, Certidões e Averbação).</li>
+                    <li><strong class="text-slate-900">Imposto PF:</strong> 15% sobre o Ganho de Capital Real (Venda - Custos Diretos - Juros - Tributos).</li>
                 </ul>
             </div>
             <div>
-                <p class="font-bold text-slate-800 uppercase mb-2">Regras de Financiamento:</p>
-                <ul class="space-y-2 leading-relaxed">
-                    <li><strong class="text-slate-900">Juros de Obra:</strong> Calculado sobre o saldo devedor médio (liberação progressiva) durante o prazo de construção.</li>
-                    <li><strong class="text-slate-900">Amortização SAC:</strong> Durante o prazo de estoque, o saldo devedor é reduzido mensalmente (Principal / Prazo_Finan), diminuindo a carga de juros mensal.</li>
+                <p class="font-bold text-slate-800 uppercase mb-2 underline decoration-amber-500 decoration-2">Engenharia Financeira:</p>
+                <ul class="space-y-2 leading-relaxed text-slate-500 italic">
+                    <li><strong>Juros Evolutivos:</strong> Incidência sobre saldo devedor pro-rata conforme evolução física da obra.</li>
+                    <li><strong>Sistema SAC:</strong> Amortização constante do principal durante o período de estoque, reduzindo a incidência mensal de juros conforme decréscimo do saldo devedor.</li>
                 </ul>
             </div>
         </div>
@@ -212,11 +212,11 @@
 
             // CUSTOS DIRETOS
             const custoObraTotal = area * cub;
-            const taxasAquisicao = vTerreno * 0.05; // ITBI + Registro
+            const taxasAquisicao = vTerreno * 0.05; 
             const comVenda = vVenda * pComissao;
             const custoHolding = 1500 * prazoVenda;
 
-            // TAXAS DE REGULARIZAÇÃO (Provisionamento CND/Habite-se)
+            // TAXAS DE REGULARIZAÇÃO
             const custoISS = custoObraTotal * 0.03;
             const custoINSS = custoObraTotal * 0.06;
             const taxasAdmObra = 5000;
@@ -227,10 +227,10 @@
             const saldoDevedorPrincipal = Math.max(0, baseImobilizada - capAporte);
             const jurosMensal = jurosAnual / 12;
 
-            // 1. Juros Obra (Evolutivo)
+            // Juros Obra
             const jurosObraTotal = (saldoDevedorPrincipal * jurosMensal * prazoObra) / 2;
 
-            // 2. Juros Estoque (SAC)
+            // Juros SAC
             let jurosEsperaVenda = 0;
             let sdLoop = saldoDevedorPrincipal;
             const amortizacao = saldoDevedorPrincipal / prazoTotalFinan;
@@ -244,31 +244,27 @@
             const custosDeduçãoPF = baseImobilizada + totalTaxasObra + totalJuros + comVenda + custoHolding;
             let impostoFinal = 0;
             if(regime === "PJ") {
-                impostoFinal = vVenda * 0.04; // RET
+                impostoFinal = vVenda * 0.04;
             } else {
                 const lucroBrutoPF = vVenda - custosDeduçãoPF;
-                impostoFinal = Math.max(0, lucroBrutoPF * 0.15); // Ganho Cap
+                impostoFinal = Math.max(0, lucroBrutoPF * 0.15);
             }
 
-            // MÉTRICAS FINAIS
+            // MÉTRICAS
             const lucroLiquido = vVenda - (custosDeduçãoPF + impostoFinal);
             const roeFinanc = (lucroLiquido / capAporte) * 100;
-
-            // CENÁRIO 100% PRÓPRIO (Comparativo)
-            let imposto100 = (regime === "PJ") ? vVenda * 0.04 : Math.max(0, (vVenda - (baseImobilizada + totalTaxasObra + comVenda + custoHolding)) * 0.15);
+            const imposto100 = (regime === "PJ") ? vVenda * 0.04 : Math.max(0, (vVenda - (baseImobilizada + totalTaxasObra + comVenda + custoHolding)) * 0.15);
             const lucro100 = vVenda - (baseImobilizada + totalTaxasObra + comVenda + custoHolding + imposto100);
             const roi100 = (lucro100 / baseImobilizada) * 100;
 
-            // KPIS GERAIS
             const tempoTotal = prazoObra + prazoVenda;
             const tirMensal = (Math.pow(1 + (roeFinanc / 100), 1 / tempoTotal) - 1) * 100;
-            const moc = (lucroLiquido + capAporte) / capAporte;
 
-            // UI UPDATE
+            // UI
             const f = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             const p = (v) => ((v / vVenda) * 100).toFixed(1) + '%';
 
-            document.getElementById('resMoc').innerText = moc.toFixed(2) + 'x';
+            document.getElementById('resMoc').innerText = ((lucroLiquido + capAporte) / capAporte).toFixed(2) + 'x';
             document.getElementById('resTir').innerText = tirMensal.toFixed(2) + '% a.m.';
             document.getElementById('resVmd').innerText = f(vVenda/area);
             document.getElementById('resRoe').innerText = roeFinanc.toFixed(1) + '%';
@@ -280,15 +276,12 @@
             document.getElementById('pTerreno').innerText = p(vTerreno + taxasAquisicao);
             document.getElementById('tabObra').innerText = f(custoObraTotal);
             document.getElementById('pObra').innerText = p(custoObraTotal);
-            
-            // Novos Campos de Taxas
             document.getElementById('tabISS').innerText = f(custoISS);
             document.getElementById('pISS').innerText = p(custoISS);
             document.getElementById('tabINSS').innerText = f(custoINSS);
             document.getElementById('pINSS').innerText = p(custoINSS);
             document.getElementById('tabTaxasAdm').innerText = f(taxasAdmObra);
             document.getElementById('pTaxasAdm').innerText = p(taxasAdmObra);
-
             document.getElementById('tabFinancPrincipal').innerText = f(saldoDevedorPrincipal);
             document.getElementById('pFinancPrincipal').innerText = p(saldoDevedorPrincipal);
             document.getElementById('tabJurosObra').innerText = f(jurosObraTotal);
@@ -313,7 +306,7 @@
             chartP = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Aporte Equity', 'Dívida Principal', 'Encargos Banco', 'Impostos/Taxas/Corret.'],
+                    labels: ['Equity', 'Financiado', 'Juros', 'Taxas/Imp.'],
                     datasets: [{
                         data: [cap, fin, j, taxas],
                         backgroundColor: ['#2563eb', '#93c5fd', '#f59e0b', '#f43f5e'],
@@ -325,7 +318,19 @@
                     cutout: '75%',
                     plugins: {
                         legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10, weight: '600' } } },
-                        datalabels: { display: false }
+                        datalabels: {
+                            color: '#fff',
+                            font: { weight: 'bold', size: 11 },
+                            display: function(context) {
+                                return context.dataset.data[context.dataIndex] > 0;
+                            },
+                            formatter: (value, ctx) => {
+                                let sum = 0;
+                                let dataArr = ctx.chart.data.datasets[0].data;
+                                dataArr.map(data => { sum += data; });
+                                return (value * 100 / sum).toFixed(1) + "%";
+                            }
+                        }
                     }
                 }
             });
