@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Estate Investor Analysis v8.9</title>
+    <title>Real Estate Investor Analysis v9.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -26,11 +26,11 @@
     <div class="max-w-7xl mx-auto">
         <header class="mb-10 flex justify-between items-end border-b border-slate-200 pb-8">
             <div>
-                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">Investment Analysis <span class="text-blue-600">v8.9</span></h1>
-                <p class="text-slate-500 text-sm font-medium">Comparativo de Eficiência: Capital Alavancado vs. 100% Próprio</p>
+                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter">Investment Analysis <span class="text-blue-600">v9.0</span></h1>
+                <p class="text-slate-500 text-sm font-medium">Análise de Custo Direto e Alavancagem Financeira</p>
             </div>
             <div class="text-right hidden md:block">
-                <span class="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Efficiency Metrics</span>
+                <span class="bg-blue-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Direct Cost Mode</span>
             </div>
         </header>
 
@@ -38,30 +38,30 @@
             <div class="lg:col-span-4 space-y-6">
                 <div class="card bg-slate-50/50">
                     <h2 class="text-xs font-black text-blue-900 mb-5 uppercase italic flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 1. Ativos (Terreno + Obra)
+                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 1. Ativos e Mão de Obra
                     </h2>
                     <div class="input-group"><label>Valor do Terreno</label><input type="number" id="vTerreno" value="250000"></div>
                     <div class="grid grid-cols-2 gap-4">
                         <div class="input-group"><label>Área (m²)</label><input type="number" id="area" value="150"></div>
                         <div class="input-group"><label>CUB (R$/m²)</label><input type="number" id="cub" value="2600"></div>
                     </div>
-                    <div class="input-group"><label>Capital Próprio (Cenário Financiado)</label><input type="number" id="capitalProprio" value="350000" class="border-blue-200 bg-blue-50"></div>
+                    <div class="input-group"><label>Aporte do Investidor (Capital Próprio)</label><input type="number" id="capitalProprio" value="350000" class="border-blue-200 bg-blue-50"></div>
                 </div>
 
                 <div class="card">
                     <h2 class="text-xs font-black text-blue-900 mb-5 uppercase italic flex items-center gap-2">
-                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 2. Crédito e Tributos
+                        <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 2. Ciclo e Crédito
                     </h2>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="input-group"><label>Obra (Meses)</label><input type="number" id="prazoObra" value="12"></div>
-                        <div class="input-group"><label>Venda (Meses)</label><input type="number" id="prazoVenda" value="6"></div>
+                        <div class="input-group"><label>Prazo Obra (Meses)</label><input type="number" id="prazoObra" value="12"></div>
+                        <div class="input-group"><label>Prazo Venda (Meses)</label><input type="number" id="prazoVenda" value="6"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="input-group"><label>Juros (% a.a.)</label><input type="number" id="jurosAnual" value="11.5"></div>
-                        <div class="input-group"><label>Prazo Finan.</label><input type="number" id="prazoTotalMeses" value="360"></div>
+                        <div class="input-group"><label>Juros Finan. (% a.a.)</label><input type="number" id="jurosAnual" value="11.5"></div>
+                        <div class="input-group"><label>Prazo Total Finan.</label><input type="number" id="prazoTotalMeses" value="360"></div>
                     </div>
                     <div class="input-group">
-                        <label>Regime de Saída</label>
+                        <label>Regime Tributário</label>
                         <select id="regimeTributario" class="border-orange-200 bg-orange-50 cursor-pointer text-xs font-bold">
                             <option value="PJ">PJ - RET (4% s/ Receita)</option>
                             <option value="PF">PF - Ganho Cap (15% s/ Lucro)</option>
@@ -81,24 +81,24 @@
             </div>
 
             <div class="lg:col-span-8 space-y-6">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="card border-b-4 border-b-blue-600 text-center">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="card border-b-4 border-b-blue-600">
                         <h3 class="kpi-title">Múltiplo (MoC)</h3>
                         <div class="kpi-value" id="resMoc">0.0x</div>
                     </div>
-                    <div class="card border-b-4 border-b-emerald-500 text-center">
+                    <div class="card border-b-4 border-b-emerald-500">
                         <h3 class="kpi-title">TIR Mensal</h3>
                         <div class="kpi-value text-emerald-600" id="resTir">0%</div>
                     </div>
-                    <div class="card border-b-4 border-b-slate-900 text-center">
+                    <div class="card border-b-4 border-b-slate-900">
                         <h3 class="kpi-title">VMD / m²</h3>
                         <div class="kpi-value" id="resVmd">R$ 0</div>
                     </div>
                 </div>
 
                 <div class="card overflow-hidden p-0">
-                    <div class="bg-slate-900 p-5">
-                        <h3 class="text-white font-bold uppercase text-[10px] tracking-widest italic">Análise de Fluxo (Cenário Financiado)</h3>
+                    <div class="bg-slate-900 p-5 flex justify-between items-center">
+                        <h3 class="text-white font-bold uppercase text-[10px] tracking-widest italic">Análise de Custos Diretos</h3>
                     </div>
                     <div class="p-2 overflow-x-auto">
                         <table class="w-full text-slate-800 border-collapse">
@@ -112,7 +112,7 @@
                             <tbody>
                                 <tr class="bg-slate-50 font-bold"><td class="text-slate-900">RECEITA BRUTA ESTIMADA</td><td class="text-right" id="tabReceita">-</td><td class="text-right">100%</td></tr>
                                 <tr><td>Terreno e Escrituração</td><td class="text-right" id="tabTerreno">-</td><td class="text-right" id="pTerreno">-</td></tr>
-                                <tr><td>Obra (Produção)</td><td class="text-right" id="tabObra">-</td><td class="text-right" id="pObra">-</td></tr>
+                                <tr><td>Custo Mão de Obra Total</td><td class="text-right" id="tabObra">-</td><td class="text-right" id="pObra">-</td></tr>
                                 <tr class="highlight-fin">
                                     <td>VALOR TOTAL DO FINANCIAMENTO (Principal)</td>
                                     <td class="text-right" id="tabFinancPrincipal">-</td>
@@ -133,34 +133,29 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-                    <div class="card h-80">
-                        <h3 class="kpi-title mb-4 text-center">Estrutura de Capital (Debt vs Equity)</h3>
+                    <div class="card h-80 text-center">
+                        <h3 class="kpi-title mb-4">Estrutura de Capital</h3>
                         <div class="relative h-64">
                             <canvas id="chartInvestor"></canvas>
                         </div>
                     </div>
-                    
                     <div class="card bg-investor text-white h-80 flex flex-col justify-between">
                         <div>
-                            <h3 class="text-[10px] font-black uppercase mb-4 text-blue-300 tracking-widest text-center border-b border-white/10 pb-2">Comparativo de Rentabilidade (ROE)</h3>
-                            
+                            <h3 class="text-[10px] font-black uppercase mb-4 text-blue-300 tracking-widest text-center border-b border-white/10 pb-2">Rentabilidade Comparada (ROE)</h3>
                             <div class="grid grid-cols-2 gap-4 mt-6">
                                 <div class="text-center border-r border-white/10">
-                                    <p class="text-[9px] opacity-70 uppercase font-bold mb-1">Cenário Alavancado</p>
+                                    <p class="text-[9px] opacity-70 uppercase font-bold mb-1">Com Financiamento</p>
                                     <p class="text-4xl font-black text-blue-400" id="resRoe">0%</p>
-                                    <p class="text-[10px] opacity-50 mt-1">ROI s/ Aporte Próprio</p>
                                 </div>
                                 <div class="text-center">
-                                    <p class="text-[9px] opacity-70 uppercase font-bold mb-1">100% Cap. Próprio</p>
+                                    <p class="text-[9px] opacity-70 uppercase font-bold mb-1">100% Capital Próprio</p>
                                     <p class="text-4xl font-black text-slate-300" id="resRoi100">0%</p>
-                                    <p class="text-[10px] opacity-50 mt-1">ROI s/ Investimento Total</p>
                                 </div>
                             </div>
                         </div>
-                        
                         <div class="pt-4 border-t border-white/10 text-center">
-                            <p class="text-[10px] opacity-70 uppercase font-bold mb-1">Diferencial de Alavancagem</p>
-                            <p class="text-xl font-bold text-emerald-400" id="resDiff">+0% de Ganho de Eficiência</p>
+                            <p class="text-[10px] opacity-70 uppercase font-bold mb-1">Ganho de Eficiência por Alavancagem</p>
+                            <p class="text-xl font-bold text-emerald-400" id="resDiff">+0%</p>
                         </div>
                     </div>
                 </div>
@@ -186,14 +181,14 @@
             const prazoTotalFinan = parseFloat(document.getElementById('prazoTotalMeses').value) || 360;
             const regime = document.getElementById('regimeTributario').value;
 
-            const margemContingencia = 1.10; 
-            const custoObraTotal = (area * cub) * margemContingencia;
+            // LÓGICA DE CUSTO DIRETO (SEM ACRÉSCIMO DE 10%)
+            const custoObraTotal = area * cub; 
             const taxasAquisicao = vTerreno * 0.05; 
             const comVenda = vVenda * pComissao;
             const custoHolding = 1500 * prazoVenda; 
             const baseImobilizado = vTerreno + taxasAquisicao + custoObraTotal;
 
-            // --- CENÁRIO A: FINANCIADO (ALAVANCADO) ---
+            // Cenário Financiado
             const saldoDevedorPrincipal = Math.max(0, baseImobilizado - capAporte);
             const jurosMensal = jurosAnual / 12;
             const jurosObraTotal = (saldoDevedorPrincipal * jurosMensal * prazoObra) / 2;
@@ -217,7 +212,7 @@
             const lucroLiquidoFinanc = vVenda - (baseImobilizado + totalCustosFinanceiros + comVenda + custoHolding + impostoFinanc);
             const roeFinanc = (lucroLiquidoFinanc / capAporte) * 100;
 
-            // --- CENÁRIO B: 100% CAPITAL PRÓPRIO ---
+            // Cenário 100% Próprio
             let imposto100 = 0;
             if (regime === "PJ") {
                 imposto100 = vVenda * 0.04;
@@ -228,27 +223,24 @@
             const lucroLiquido100 = vVenda - (baseImobilizado + comVenda + custoHolding + imposto100);
             const roe100 = (lucroLiquido100 / baseImobilizado) * 100;
 
-            // --- KPIS GERAIS ---
+            // KPIs
             const tempoTotal = prazoObra + prazoVenda;
             const tirMensal = (Math.pow(1 + (roeFinanc / 100), 1 / tempoTotal) - 1) * 100;
             const moc = (lucroLiquidoFinanc + capAporte) / capAporte;
             const vmd = vVenda / area;
             const diffAlavancagem = roeFinanc - roe100;
 
-            // --- UI UPDATE ---
+            // Update UI
             const f = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
             const p = (v) => ((v / vVenda) * 100).toFixed(1) + '%';
 
             document.getElementById('resMoc').innerText = moc.toFixed(2) + 'x';
             document.getElementById('resTir').innerText = tirMensal.toFixed(2) + '% a.m.';
             document.getElementById('resVmd').innerText = f(vmd);
-            
-            // Comparativo ROE
             document.getElementById('resRoe').innerText = roeFinanc.toFixed(1) + '%';
             document.getElementById('resRoi100').innerText = roe100.toFixed(1) + '%';
-            document.getElementById('resDiff').innerText = `+${diffAlavancagem.toFixed(1)}% de Ganho de Eficiência`;
+            document.getElementById('resDiff').innerText = `+${diffAlavancagem.toFixed(1)}%`;
 
-            // Tabela
             document.getElementById('tabReceita').innerText = f(vVenda);
             document.getElementById('tabTerreno').innerText = f(vTerreno + taxasAquisicao);
             document.getElementById('pTerreno').innerText = p(vTerreno + taxasAquisicao);
@@ -278,12 +270,11 @@
             chartP = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Aporte (Equity)', 'Principal Banco', 'Juros (Debt)', 'Taxas/Op.'],
+                    labels: ['Aporte Equity', 'Financiamento', 'Juros Bancários', 'Custos Operacionais'],
                     datasets: [{
                         data: [cap, fin, j, taxas],
-                        backgroundColor: ['#3b82f6', '#93c5fd', '#f59e0b', '#f43f5e'],
-                        borderWidth: 0,
-                        hoverOffset: 10
+                        backgroundColor: ['#2563eb', '#93c5fd', '#f59e0b', '#f43f5e'],
+                        borderWidth: 0
                     }]
                 },
                 options: {
@@ -296,9 +287,7 @@
                 }
             });
         }
-        
         window.onload = calcular;
     </script>
 </body>
 </html>
-
