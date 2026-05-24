@@ -70,16 +70,39 @@
                                 <input type="number" id="pINSS" value="6" step="0.5" class="border-slate-300 bg-white text-center" oninput="calcular()">
                             </div>
                         </div>
-                        <div class="mt-2 grid grid-cols-2 gap-2">
+                        <div class="mt-2">
                             <div class="input-group !mb-0">
-                                <label>Taxas Adm (R$)</label>
+                                <label>Taxas Cartoriais / Regularização (R$ — custo fixo)</label>
                                 <input type="number" id="taxasAdm" value="5000" class="border-slate-300 bg-white" oninput="calcular()">
                             </div>
+                            <p class="text-[8px] text-slate-400 mt-1 leading-tight">Alvará de construção, aprovação de projeto, habite-se e averbação. Valor fixo — não depende do prazo.</p>
+                        </div>
+                    </div>
+
+                    <!-- Custos mensais de carregamento: IPTU + Condomínio -->
+                    <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-3 mb-1">
+                        <p class="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-2">Carregamento Mensal — IPTU + Condomínio</p>
+                        <div class="grid grid-cols-2 gap-2">
                             <div class="input-group !mb-0">
-                                <label>Holding/mês (R$)</label>
-                                <input type="number" id="custoHolding" value="1500" class="border-slate-300 bg-white" oninput="calcular()">
+                                <label>IPTU (R$/mês)</label>
+                                <input type="number" id="iptuMes" value="400" class="border-amber-300 bg-white text-center font-bold" oninput="calcular()">
+                            </div>
+                            <div class="input-group !mb-0">
+                                <label>Condomínio (R$/mês)</label>
+                                <input type="number" id="condMes" value="800" class="border-amber-300 bg-white text-center font-bold" oninput="calcular()">
                             </div>
                         </div>
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <div class="input-group !mb-0">
+                                <label>Outros Custos Fixos (R$/mês)</label>
+                                <input type="number" id="outroHoldingMes" value="300" class="border-amber-300 bg-white text-center" oninput="calcular()">
+                            </div>
+                            <div class="input-group !mb-0">
+                                <label>Total calculado (R$)</label>
+                                <input type="text" id="holdingTotalDisplay" readonly class="border-amber-200 bg-amber-100/60 text-amber-800 font-black text-center cursor-default text-xs">
+                            </div>
+                        </div>
+                        <p class="text-[8px] text-amber-600 mt-2 leading-tight" id="holdingPrazoLabel">Calculado sobre <strong>0 meses</strong> (obra + venda). Atualiza automaticamente ao mudar os prazos.</p>
                     </div>
                 </div>
 
@@ -194,7 +217,7 @@
                                 <tr><td>Custo de Mão de Obra (CUB × Área)</td><td class="text-right" id="tabObra">-</td><td class="text-right" id="pObra">-</td></tr>
                                 <tr class="bg-rose-50/40 italic"><td id="descISS">ISS de Obra (3%)</td><td class="text-right" id="tabISS">-</td><td class="text-right" id="pISS">-</td></tr>
                                 <tr class="bg-rose-50/40 italic"><td id="descINSS">INSS de Obra (6%)</td><td class="text-right" id="tabINSS">-</td><td class="text-right" id="pINSS">-</td></tr>
-                                <tr class="bg-rose-50/40 italic"><td>Taxas de Regularização / Adm</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
+                                <tr class="bg-rose-50/40 italic"><td>Taxas Cartoriais / Regularização (alvará, habite-se, averbação)</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
                                 <tr class="highlight-fin"><td>= BASE DO ATIVO (Custo Total de Produção)</td><td class="text-right" id="tabBaseAtivo">-</td><td class="text-right" id="pBaseAtivo">-</td></tr>
                                 <!-- Financiamento -->
                                 <tr><td colspan="3" class="!p-2 !pt-3 text-[9px] font-black text-blue-600 uppercase tracking-widest">▸ Financiamento bancário</td></tr>
@@ -203,7 +226,10 @@
                                 <tr class="italic text-amber-700"><td>Juros de Estoque / SAC (período de venda)</td><td class="text-right" id="tabJurosVenda">-</td><td class="text-right" id="pJurosVenda">-</td></tr>
                                 <!-- Custos de saída -->
                                 <tr><td colspan="3" class="!p-2 !pt-3 text-[9px] font-black text-blue-600 uppercase tracking-widest">▸ Custos de saída</td></tr>
-                                <tr><td id="descHolding">Custo de Carregamento / Holding (R$1.500/mês)</td><td class="text-right" id="tabHolding">-</td><td class="text-right" id="pHolding">-</td></tr>
+                                <tr><td id="descHolding">IPTU + Condomínio + Outros (R$/mês × meses)</td><td class="text-right" id="tabHolding">-</td><td class="text-right" id="pHolding">-</td></tr>
+                                <tr class="text-[11px] text-slate-400 italic"><td id="descIPTU" class="pl-6">↳ IPTU</td><td class="text-right" id="tabIPTU">-</td><td class="text-right" id="pIPTU">-</td></tr>
+                                <tr class="text-[11px] text-slate-400 italic"><td id="descCond" class="pl-6">↳ Condomínio</td><td class="text-right" id="tabCond">-</td><td class="text-right" id="pCond">-</td></tr>
+                                <tr class="text-[11px] text-slate-400 italic"><td id="descOutros" class="pl-6">↳ Outros custos fixos mensais</td><td class="text-right" id="tabOutros">-</td><td class="text-right" id="pOutros">-</td></tr>
                                 <tr><td>Comissão de Venda</td><td class="text-right" id="tabCom">-</td><td class="text-right" id="pCom">-</td></tr>
                                 <tr class="highlight-tax"><td id="descImposto">Imposto sobre Ganho</td><td class="text-right" id="tabImposto">-</td><td class="text-right" id="pImposto">-</td></tr>
                                 <!-- Resultado -->
@@ -303,7 +329,16 @@
                         <p><strong class="text-slate-800">ITBI + Registro (% editável, padrão 5%):</strong> incide sobre o valor do terreno. Inclui o imposto municipal de transmissão (ITBI, média 2–3%) e os emolumentos de cartório de registro (0,5–1%). O percentual é editável pois varia por município.</p>
                         <p><strong class="text-slate-800">ISS de Obra (% editável, padrão 3%):</strong> Imposto Sobre Serviços incidente sobre a mão de obra de construção. Alíquota municipal, varia de 2% a 5%. Calculado sobre o custo de mão de obra (CUB × Área).</p>
                         <p><strong class="text-slate-800">INSS de Obra (% editável, padrão 6%):</strong> Contribuição previdenciária patronal sobre a mão de obra. O padrão de 6% corresponde ao regime de desoneração da folha (Lei 12.844/13), aplicável à construção civil. No regime normal, a alíquota patronal pode chegar a 20%.</p>
-                        <p><strong class="text-slate-800">Taxas de Regularização / Adm (R$ editável):</strong> engloba aprovação de projeto, alvará de construção, habite-se, averbação e demais custos cartorários fixos da incorporação.</p>
+                        <p><strong class="text-slate-800">Taxas Cartoriais / Regularização (R$ fixo):</strong> custo único (não mensal) de formalização da obra — alvará de construção, aprovação de projeto, habite-se e averbação. Por ser um desembolso fixo independente do prazo, entra diretamente na <strong>base do ativo</strong> (custo de produção), compondo a base contábil dedutível no regime PF.</p>
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900">
+                            <strong>Carregamento Mensal — IPTU + Condomínio + Outros:</strong> despesas fixas pagas todos os meses durante toda a operação (obra + venda). São inseridas em três campos separados para clareza:
+                            <ul class="list-disc ml-4 mt-1 space-y-0.5 text-[10px]">
+                                <li><strong>IPTU (R$/mês):</strong> imposto predial proporcional ao período de posse do terreno/obra.</li>
+                                <li><strong>Condomínio (R$/mês):</strong> taxa condominial do empreendimento enquanto o imóvel estiver em estoque.</li>
+                                <li><strong>Outros custos fixos (R$/mês):</strong> vigilância, energia, seguros e demais despesas recorrentes.</li>
+                            </ul>
+                            O total mensal é multiplicado automaticamente pelo <strong>prazo total (obra + venda)</strong>, exibindo o preview em tempo real. O valor entra no fluxo de caixa mês a mês na TIR e na base dedutível do PF.
+                        </div>
                     </div>
                 </div>
 
@@ -318,7 +353,7 @@
                         <p><strong class="text-slate-800">Juros de Obra:</strong> durante a construção, o capital é desembolsado progressivamente ao longo dos meses (medições). O modelo usa a média do saldo devedor para estimar os juros: <code class="bg-slate-100 px-1 rounded">J_obra = SD × i_mensal × prazo_obra / 2</code>. A divisão por 2 captura que, na média, metade do saldo estava exposta aos juros.</p>
                         <p><strong class="text-slate-800">Juros de Estoque (SAC):</strong> após a conclusão da obra, o imóvel fica em estoque até a venda. Aplica-se o Sistema de Amortização Constante (SAC), onde a amortização mensal é fixa (<code class="bg-slate-100 px-1 rounded">A = SD / prazo_total</code>) e os juros incidem sobre o saldo decrescente mês a mês durante o período de venda.</p>
                         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900">
-                            <strong>Custo de Carregamento / Holding (R$ editável, padrão R$1.500/mês):</strong> despesas fixas mensais de manutenção do ativo durante toda a operação (IPTU, condomínio, vigilância, energia, seguros). Multiplicado pelo ciclo total (Obra + Venda). Este custo costuma ser esquecido em análises simplistas, distorcendo o lucro real.
+                            <strong>Atenção:</strong> os juros de obra e estoque são calculados sobre o saldo devedor bancário (base do ativo menos equity), não sobre o capital próprio. O custo real do financiamento depende da taxa e do prazo — compare com o retorno do projeto antes de alavancar.
                         </div>
                     </div>
                 </div>
@@ -470,7 +505,10 @@
                 const pISSv         = parseFloat(document.getElementById('pISS').value)          || 0;
                 const pINSSv        = parseFloat(document.getElementById('pINSS').value)         || 0;
                 const taxasAdm      = parseFloat(document.getElementById('taxasAdm').value)      || 0;
-                const custoHolding  = parseFloat(document.getElementById('custoHolding').value)  || 0;
+                // Novos campos de carregamento mensal (substituem o custoHolding único)
+                const iptuMes         = parseFloat(document.getElementById('iptuMes').value)         || 0;
+                const condMes         = parseFloat(document.getElementById('condMes').value)         || 0;
+                const outroHoldingMes = parseFloat(document.getElementById('outroHoldingMes').value) || 0;
                 const prazoObra     = parseFloat(document.getElementById('prazoObra').value)     || 1;
                 const prazoVenda    = parseFloat(document.getElementById('prazoVenda').value)    || 1;
                 const jurosAnual    = parseFloat(document.getElementById('jurosAnual').value)    || 0;
@@ -486,8 +524,23 @@
                 const taxasAquisicao  = vTerreno * (pAquisicao / 100);
                 const regISS          = custoMaoObra * (pISSv / 100);
                 const regINSS         = custoMaoObra * (pINSSv / 100);
+                // taxasAdm = cartoriais fixas (alvará, habite-se, averbação) → entram na baseAtivo
                 const totalReg        = regISS + regINSS + taxasAdm;
                 const baseAtivo       = vTerreno + taxasAquisicao + custoMaoObra + totalReg;
+
+                // ── Carregamento mensal: IPTU + Condomínio + Outros ────────
+                // Calculado sobre o prazo total (obra + venda) e exibido como preview
+                const prazoTotal      = prazoObra + prazoVenda;
+                const custoHolding    = iptuMes + condMes + outroHoldingMes; // total mensal
+                const totalHolding    = custoHolding * prazoTotal;
+
+                // Preview automático no bloco de inputs
+                const f2 = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+                document.getElementById('holdingTotalDisplay').value = f2(totalHolding);
+                document.getElementById('holdingPrazoLabel').innerHTML =
+                    `IPTU <strong>${f2(iptuMes)}</strong> + Cond. <strong>${f2(condMes)}</strong> + Outros <strong>${f2(outroHoldingMes)}</strong> = `+
+                    `<strong>${f2(custoHolding)}/mês</strong> × <strong>${Math.round(prazoTotal)} meses</strong> `+
+                    `(${Math.round(prazoObra)} obra + ${Math.round(prazoVenda)} venda)`;
 
                 // ── Financiamento ──────────────────────────────────────────
                 const sdInicial  = Math.max(0, baseAtivo - capAporte);
@@ -507,7 +560,7 @@
 
                 // ── Custos de saída ────────────────────────────────────────
                 const comVenda     = vVenda * pComissao;
-                const totalHolding = custoHolding * (prazoObra + prazoVenda);
+                // totalHolding já calculado acima: custoHolding (mensal) × prazoTotal
 
                 // ── Tributação ─────────────────────────────────────────────
                 // Base de custo dedutível para PF
@@ -597,9 +650,20 @@
                 document.getElementById('pJurosObra').innerText    = p(jObra);
                 document.getElementById('tabJurosVenda').innerText = f(jEstoque);
                 document.getElementById('pJurosVenda').innerText   = p(jEstoque);
-                document.getElementById('descHolding').innerText   = `Custo de Carregamento / Holding (R$${custoHolding.toLocaleString('pt-BR')}/mês × ${prazoObra + prazoVenda} meses)`;
-                document.getElementById('tabHolding').innerText    = f(totalHolding);
-                document.getElementById('pHolding').innerText      = p(totalHolding);
+                // Holding detalhado: linha-mãe + três sub-itens
+                document.getElementById('descHolding').innerText =
+                    `IPTU + Condomínio + Outros — ${f2(custoHolding)}/mês × ${Math.round(prazoTotal)} meses (${Math.round(prazoObra)} obra + ${Math.round(prazoVenda)} venda)`;
+                document.getElementById('tabHolding').innerText   = f(totalHolding);
+                document.getElementById('pHolding').innerText     = p(totalHolding);
+                document.getElementById('descIPTU').innerText  = `↳ IPTU (${f2(iptuMes)}/mês × ${Math.round(prazoTotal)} meses)`;
+                document.getElementById('tabIPTU').innerText   = f(iptuMes * prazoTotal);
+                document.getElementById('pIPTU').innerText     = p(iptuMes * prazoTotal);
+                document.getElementById('descCond').innerText  = `↳ Condomínio (${f2(condMes)}/mês × ${Math.round(prazoTotal)} meses)`;
+                document.getElementById('tabCond').innerText   = f(condMes * prazoTotal);
+                document.getElementById('pCond').innerText     = p(condMes * prazoTotal);
+                document.getElementById('descOutros').innerText = `↳ Outros custos fixos (${f2(outroHoldingMes)}/mês × ${Math.round(prazoTotal)} meses)`;
+                document.getElementById('tabOutros').innerText  = f(outroHoldingMes * prazoTotal);
+                document.getElementById('pOutros').innerText   = p(outroHoldingMes * prazoTotal);
                 document.getElementById('tabCom').innerText        = f(comVenda);
                 document.getElementById('pCom').innerText          = p(comVenda);
                 document.getElementById('tabImposto').innerText    = f(impFinal);
@@ -748,7 +812,11 @@
             const pISSv        = parseFloat(document.getElementById('pISS').value)          || 0;
             const pINSSv       = parseFloat(document.getElementById('pINSS').value)         || 0;
             const taxasAdm     = parseFloat(document.getElementById('taxasAdm').value)      || 0;
-            const custoHolding = parseFloat(document.getElementById('custoHolding').value)  || 0;
+            // Novos campos de holding mensal
+            const iptuMesG         = parseFloat(document.getElementById('iptuMes').value)         || 0;
+            const condMesG         = parseFloat(document.getElementById('condMes').value)         || 0;
+            const outroHoldingMesG = parseFloat(document.getElementById('outroHoldingMes').value) || 0;
+            const custoHolding = iptuMesG + condMesG + outroHoldingMesG;
             const prazoObra    = parseFloat(document.getElementById('prazoObra').value)     || 1;
             const prazoVenda   = parseFloat(document.getElementById('prazoVenda').value)    || 1;
             const jurosAnual   = parseFloat(document.getElementById('jurosAnual').value)    || 0;
