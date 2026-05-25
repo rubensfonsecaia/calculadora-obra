@@ -46,9 +46,9 @@
                     <h2 class="text-xs font-black text-blue-900 mb-5 uppercase italic flex items-center gap-2">
                         <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 1. Ativo e Mão de Obra
                     </h2>
-                    <div class="input-group"><label>Valor do Terreno (R$)</label><input type="number" id="vTerreno" value="250000" oninput="calcular()"></div>
+                    <div class="input-group"><label>Valor do Terreno (R$)</label><input type="number" id="vTerreno" value="250000" oninput="if(modoHolding==='estimar')estimarHolding();else calcular()"></div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="input-group"><label>Área Útil (m²)</label><input type="number" id="area" value="150" oninput="calcular()"></div>
+                        <div class="input-group"><label>Área Útil (m²)</label><input type="number" id="area" value="150" oninput="if(modoHolding==='estimar')estimarHolding();else calcular()"></div>
                         <div class="input-group"><label>CUB (R$/m²)</label><input type="number" id="cub" value="2600" oninput="calcular()"></div>
                     </div>
                     <div class="input-group"><label>Aporte Inicial / Equity (R$)</label><input type="number" id="capitalProprio" value="350000" class="border-blue-200 bg-blue-50 font-bold" oninput="calcular()"></div>
@@ -81,28 +81,90 @@
 
                     <!-- Custos mensais de carregamento: IPTU + Condomínio -->
                     <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-3 mb-1">
-                        <p class="text-[9px] font-black text-amber-700 uppercase tracking-widest mb-2">Carregamento Mensal — IPTU + Condomínio</p>
-                        <div class="grid grid-cols-2 gap-2">
-                            <div class="input-group !mb-0">
-                                <label>IPTU (R$/mês)</label>
-                                <input type="number" id="iptuMes" value="400" class="border-amber-300 bg-white text-center font-bold" oninput="calcular()">
-                            </div>
-                            <div class="input-group !mb-0">
-                                <label>Condomínio (R$/mês)</label>
-                                <input type="number" id="condMes" value="800" class="border-amber-300 bg-white text-center font-bold" oninput="calcular()">
+
+                        <!-- Cabeçalho com botão toggle -->
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="text-[9px] font-black text-amber-700 uppercase tracking-widest">Carregamento Mensal — IPTU + Condomínio</p>
+                            <div class="flex rounded-xl overflow-hidden border border-amber-300 text-[8px] font-black uppercase tracking-wide shrink-0">
+                                <button id="btnModoEstimar" onclick="setModoHolding('estimar')"
+                                    class="px-3 py-1.5 bg-amber-500 text-white transition-all">⚡ Estimar</button>
+                                <button id="btnModoManual" onclick="setModoHolding('manual')"
+                                    class="px-3 py-1.5 bg-white text-amber-600 transition-all">✎ Manual</button>
                             </div>
                         </div>
+
+                        <!-- Painel ESTIMATIVA (parâmetros de cálculo automático) -->
+                        <div id="painelEstimar">
+                            <div class="bg-amber-100/60 border border-amber-300 rounded-xl p-2.5 mb-2">
+                                <p class="text-[8px] font-black text-amber-800 uppercase tracking-widest mb-2">Parâmetros de Estimativa</p>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div class="input-group !mb-0">
+                                        <label>Alíquota IPTU (% a.a.)</label>
+                                        <input type="number" id="aliqIPTU" value="0.5" step="0.05" min="0"
+                                            class="border-amber-300 bg-white text-center font-bold text-xs"
+                                            oninput="estimarHolding()">
+                                    </div>
+                                    <div class="input-group !mb-0">
+                                        <label>Condomínio (R$/m²/mês)</label>
+                                        <input type="number" id="condM2" value="3" step="0.5" min="0"
+                                            class="border-amber-300 bg-white text-center font-bold text-xs"
+                                            oninput="estimarHolding()">
+                                    </div>
+                                </div>
+                                <p class="text-[8px] text-amber-600 mt-1.5 leading-tight">
+                                    IPTU = Terreno × alíquota ÷ 12 &nbsp;|&nbsp; Cond. = Área útil × R$/m²
+                                </p>
+                            </div>
+                            <!-- Campos resultantes (somente leitura no modo estimar) -->
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="input-group !mb-0">
+                                    <label>IPTU estimado (R$/mês)</label>
+                                    <input type="text" id="iptuMesDisplay" readonly
+                                        class="border-amber-200 bg-amber-100/40 text-amber-800 font-black text-center cursor-default text-xs">
+                                </div>
+                                <div class="input-group !mb-0">
+                                    <label>Condomínio estimado (R$/mês)</label>
+                                    <input type="text" id="condMesDisplay" readonly
+                                        class="border-amber-200 bg-amber-100/40 text-amber-800 font-black text-center cursor-default text-xs">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Painel MANUAL (campos livres — oculto por padrão) -->
+                        <div id="painelManual" style="display:none">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="input-group !mb-0">
+                                    <label>IPTU (R$/mês)</label>
+                                    <input type="number" id="iptuMes" value="400"
+                                        class="border-amber-300 bg-white text-center font-bold"
+                                        oninput="calcular()">
+                                </div>
+                                <div class="input-group !mb-0">
+                                    <label>Condomínio (R$/mês)</label>
+                                    <input type="number" id="condMes" value="800"
+                                        class="border-amber-300 bg-white text-center font-bold"
+                                        oninput="calcular()">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Outros custos + Total: sempre visíveis -->
                         <div class="grid grid-cols-2 gap-2 mt-2">
                             <div class="input-group !mb-0">
                                 <label>Outros Custos Fixos (R$/mês)</label>
-                                <input type="number" id="outroHoldingMes" value="300" class="border-amber-300 bg-white text-center" oninput="calcular()">
+                                <input type="number" id="outroHoldingMes" value="300"
+                                    class="border-amber-300 bg-white text-center"
+                                    oninput="calcular()">
                             </div>
                             <div class="input-group !mb-0">
                                 <label>Total calculado (R$)</label>
-                                <input type="text" id="holdingTotalDisplay" readonly class="border-amber-200 bg-amber-100/60 text-amber-800 font-black text-center cursor-default text-xs">
+                                <input type="text" id="holdingTotalDisplay" readonly
+                                    class="border-amber-200 bg-amber-100/60 text-amber-800 font-black text-center cursor-default text-xs">
                             </div>
                         </div>
-                        <p class="text-[8px] text-amber-600 mt-2 leading-tight" id="holdingPrazoLabel">Calculado sobre <strong>0 meses</strong> (obra + venda). Atualiza automaticamente ao mudar os prazos.</p>
+                        <p class="text-[8px] text-amber-600 mt-2 leading-tight" id="holdingPrazoLabel">
+                            Calculado sobre <strong>0 meses</strong> (obra + venda).
+                        </p>
                     </div>
                 </div>
 
@@ -331,13 +393,18 @@
                         <p><strong class="text-slate-800">INSS de Obra (% editável, padrão 6%):</strong> Contribuição previdenciária patronal sobre a mão de obra. O padrão de 6% corresponde ao regime de desoneração da folha (Lei 12.844/13), aplicável à construção civil. No regime normal, a alíquota patronal pode chegar a 20%.</p>
                         <p><strong class="text-slate-800">Taxas Cartoriais / Regularização (R$ fixo):</strong> custo único (não mensal) de formalização da obra — alvará de construção, aprovação de projeto, habite-se e averbação. Por ser um desembolso fixo independente do prazo, entra diretamente na <strong>base do ativo</strong> (custo de produção), compondo a base contábil dedutível no regime PF.</p>
                         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900">
-                            <strong>Carregamento Mensal — IPTU + Condomínio + Outros:</strong> despesas fixas pagas todos os meses durante toda a operação (obra + venda). São inseridas em três campos separados para clareza:
-                            <ul class="list-disc ml-4 mt-1 space-y-0.5 text-[10px]">
-                                <li><strong>IPTU (R$/mês):</strong> imposto predial proporcional ao período de posse do terreno/obra.</li>
-                                <li><strong>Condomínio (R$/mês):</strong> taxa condominial do empreendimento enquanto o imóvel estiver em estoque.</li>
-                                <li><strong>Outros custos fixos (R$/mês):</strong> vigilância, energia, seguros e demais despesas recorrentes.</li>
+                            <strong>Carregamento Mensal — IPTU + Condomínio + Outros:</strong> despesas fixas pagas todos os meses durante toda a operação (obra + venda). O campo oferece dois modos alternáveis pelo botão:
+                            <ul class="list-disc ml-4 mt-2 space-y-1 text-[10px]">
+                                <li><strong>⚡ Estimar (padrão):</strong> calcula automaticamente a partir de dois parâmetros:
+                                    <ul class="list-disc ml-4 mt-0.5 space-y-0.5">
+                                        <li><em>IPTU</em> = Valor do Terreno × Alíquota (% a.a.) ÷ 12 — padrão 0,5% a.a., editável. Incide sobre o valor venal do terreno durante a obra.</li>
+                                        <li><em>Condomínio</em> = Área útil × R$/m²/mês — padrão R$ 8/m², editável. Base usada pelo mercado em laudos de previsão condominial.</li>
+                                    </ul>
+                                    Os valores são recalculados em tempo real ao mudar terreno, área ou os parâmetros de estimativa.
+                                </li>
+                                <li><strong>✎ Manual:</strong> você digita diretamente IPTU e Condomínio em R$/mês, ideal quando já tem os dados reais do imóvel ou da construtora.</li>
                             </ul>
-                            O total mensal é multiplicado automaticamente pelo <strong>prazo total (obra + venda)</strong>, exibindo o preview em tempo real. O valor entra no fluxo de caixa mês a mês na TIR e na base dedutível do PF.
+                            Em ambos os modos, o campo <em>Outros custos fixos</em> permanece livre (energia, seguro, vigilância). O total mensal é multiplicado pelo <strong>prazo total (obra + venda)</strong> e entra no fluxo de caixa mês a mês na TIR e na base dedutível do PF.
                         </div>
                     </div>
                 </div>
@@ -471,6 +538,44 @@
     </div>
 
     <script>
+        // ═══ MODO HOLDING: 'estimar' | 'manual' ═══
+        let modoHolding = 'estimar';
+
+        function setModoHolding(modo) {
+            modoHolding = modo;
+            document.getElementById('painelEstimar').style.display = modo === 'estimar' ? '' : 'none';
+            document.getElementById('painelManual').style.display  = modo === 'manual'  ? '' : 'none';
+            // Botões: ativo = amber sólido, inativo = branco
+            document.getElementById('btnModoEstimar').className =
+                'px-3 py-1.5 transition-all ' + (modo === 'estimar' ? 'bg-amber-500 text-white' : 'bg-white text-amber-600');
+            document.getElementById('btnModoManual').className =
+                'px-3 py-1.5 transition-all ' + (modo === 'manual'  ? 'bg-amber-500 text-white' : 'bg-white text-amber-600');
+            if (modo === 'estimar') estimarHolding();
+            else calcular();
+        }
+
+        // Calcula IPTU e Condomínio estimados e dispara recálculo
+        function estimarHolding() {
+            const vTerreno = parseFloat(document.getElementById('vTerreno').value) || 0;
+            const area     = parseFloat(document.getElementById('area').value)     || 0;
+            const aliq     = parseFloat(document.getElementById('aliqIPTU').value) || 0;
+            const condM2   = parseFloat(document.getElementById('condM2').value)   || 0;
+            const f2 = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+            const iptuEst = vTerreno * (aliq / 100) / 12;
+            const condEst = area * condM2;
+
+            // Preenche displays de somente-leitura
+            document.getElementById('iptuMesDisplay').value = f2(iptuEst);
+            document.getElementById('condMesDisplay').value  = f2(condEst);
+
+            // Espelha nos campos numéricos usados pelo calcular()
+            document.getElementById('iptuMes').value = iptuEst.toFixed(2);
+            document.getElementById('condMes').value  = condEst.toFixed(2);
+
+            calcular();
+        }
+
         let chartP = null;
         Chart.register(ChartDataLabels);
 
@@ -978,7 +1083,9 @@
             });
         }
 
-        window.addEventListener('load', () => setTimeout(calcular, 100));
+        window.addEventListener('load', () => setTimeout(() => {
+            setModoHolding('estimar');
+        }, 100));
     </script>
 </body>
 </html>
