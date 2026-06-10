@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real Estate Investment Analysis v2.0</title>
+    <title>Análise de Investimento Imobiliário v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -21,6 +21,17 @@
         .bg-investor { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
         .highlight-fin { @apply bg-blue-50 text-blue-700 font-bold border-l-4 border-blue-600; }
         .highlight-tax { @apply bg-rose-50 text-rose-700 font-semibold; }
+
+        @media print {
+            @page { size: A4; margin: 12mm 10mm; }
+            body { background: #fff !important; font-size: 10px !important; padding: 0 !important; }
+            .no-print { display: none !important; }
+            .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
+            input, select { border: none !important; background: transparent !important; padding: 0 !important; }
+            canvas { max-height: 180px !important; }
+            .max-w-7xl { max-width: 100% !important; }
+            button { display: none !important; }
+        }
     </style>
 </head>
 <body class="p-4 md:p-10 text-slate-800">
@@ -28,11 +39,15 @@
 
         <header class="mb-10 flex justify-between items-end border-b border-slate-200 pb-8">
             <div>
-                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter text-blue-600">Investment Analysis v2.0</h1>
+                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter text-blue-600">Análise de Investimento v2.0</h1>
                 <p class="text-slate-500 text-sm font-medium italic">Simulador Profissional: Incorporação Imobiliária e Alavancagem de Capital</p>
             </div>
-            <div class="text-right hidden md:block">
+            <div class="text-right hidden md:flex flex-col items-end gap-3">
                 <span class="bg-blue-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest italic">Full Engineering Disclosure</span>
+                <button onclick="exportarPDF()" class="no-print bg-slate-900 hover:bg-blue-600 text-white font-black py-2.5 px-5 rounded-2xl shadow-lg transition-all uppercase tracking-widest text-[10px] flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-8m0 8l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+                    Exportar PDF
+                </button>
             </div>
         </header>
 
@@ -46,9 +61,9 @@
                     <h2 class="text-xs font-black text-blue-900 mb-5 uppercase italic flex items-center gap-2">
                         <span class="w-2 h-2 bg-blue-600 rounded-full"></span> 1. Ativo e Mão de Obra
                     </h2>
-                    <div class="input-group"><label>Valor do Terreno (R$)</label><input type="number" id="vTerreno" value="250000" oninput="if(modoHolding==='estimar')estimarHolding();else calcular()"></div>
+                    <div class="input-group"><label>Valor do Terreno (R$)</label><input type="number" id="vTerreno" value="250000" oninput="calcular()"></div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div class="input-group"><label>Área Útil (m²)</label><input type="number" id="area" value="150" oninput="if(modoHolding==='estimar')estimarHolding();else calcular()"></div>
+                        <div class="input-group"><label>Área Útil (m²)</label><input type="number" id="area" value="150" oninput="calcular()"></div>
                         <div class="input-group"><label>CUB (R$/m²)</label><input type="number" id="cub" value="2600" oninput="calcular()"></div>
                     </div>
                     <div class="input-group"><label>Aporte Inicial / Equity (R$)</label><input type="number" id="capitalProprio" value="350000" class="border-blue-200 bg-blue-50 font-bold" oninput="calcular()"></div>
@@ -70,101 +85,16 @@
                                 <input type="number" id="pINSS" value="6" step="0.5" class="border-slate-300 bg-white text-center" oninput="calcular()">
                             </div>
                         </div>
-                        <div class="mt-2">
+                        <div class="mt-2 grid grid-cols-2 gap-2">
                             <div class="input-group !mb-0">
-                                <label>Taxas Cartoriais / Regularização (R$ — custo fixo)</label>
+                                <label>Taxas Adm (R$)</label>
                                 <input type="number" id="taxasAdm" value="5000" class="border-slate-300 bg-white" oninput="calcular()">
                             </div>
-                            <p class="text-[8px] text-slate-400 mt-1 leading-tight">Alvará de construção, aprovação de projeto, habite-se e averbação. Valor fixo — não depende do prazo.</p>
-                        </div>
-                    </div>
-
-                    <!-- Custos mensais de carregamento: IPTU + Condomínio -->
-                    <div class="bg-amber-50/60 border border-amber-200 rounded-2xl p-3 mb-1">
-
-                        <!-- Cabeçalho com botão toggle -->
-                        <div class="flex items-center justify-between mb-3">
-                            <p class="text-[9px] font-black text-amber-700 uppercase tracking-widest">Carregamento Mensal — IPTU + Condomínio</p>
-                            <div class="flex rounded-xl overflow-hidden border border-amber-300 text-[8px] font-black uppercase tracking-wide shrink-0">
-                                <button id="btnModoEstimar" onclick="setModoHolding('estimar')"
-                                    class="px-3 py-1.5 bg-amber-500 text-white transition-all">⚡ Estimar</button>
-                                <button id="btnModoManual" onclick="setModoHolding('manual')"
-                                    class="px-3 py-1.5 bg-white text-amber-600 transition-all">✎ Manual</button>
-                            </div>
-                        </div>
-
-                        <!-- Painel ESTIMATIVA (parâmetros de cálculo automático) -->
-                        <div id="painelEstimar">
-                            <div class="bg-amber-100/60 border border-amber-300 rounded-xl p-2.5 mb-2">
-                                <p class="text-[8px] font-black text-amber-800 uppercase tracking-widest mb-2">Parâmetros de Estimativa</p>
-                                <div class="grid grid-cols-2 gap-2">
-                                    <div class="input-group !mb-0">
-                                        <label>Alíquota IPTU (% a.a.)</label>
-                                        <input type="number" id="aliqIPTU" value="0.5" step="0.05" min="0"
-                                            class="border-amber-300 bg-white text-center font-bold text-xs"
-                                            oninput="estimarHolding()">
-                                    </div>
-                                    <div class="input-group !mb-0">
-                                        <label>Condomínio (R$/m²/mês)</label>
-                                        <input type="number" id="condM2" value="3" step="0.5" min="0"
-                                            class="border-amber-300 bg-white text-center font-bold text-xs"
-                                            oninput="estimarHolding()">
-                                    </div>
-                                </div>
-                                <p class="text-[8px] text-amber-600 mt-1.5 leading-tight">
-                                    IPTU = Terreno × alíquota ÷ 12 &nbsp;|&nbsp; Cond. = Área útil × R$/m²
-                                </p>
-                            </div>
-                            <!-- Campos resultantes (somente leitura no modo estimar) -->
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="input-group !mb-0">
-                                    <label>IPTU estimado (R$/mês)</label>
-                                    <input type="text" id="iptuMesDisplay" readonly
-                                        class="border-amber-200 bg-amber-100/40 text-amber-800 font-black text-center cursor-default text-xs">
-                                </div>
-                                <div class="input-group !mb-0">
-                                    <label>Condomínio estimado (R$/mês)</label>
-                                    <input type="text" id="condMesDisplay" readonly
-                                        class="border-amber-200 bg-amber-100/40 text-amber-800 font-black text-center cursor-default text-xs">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Painel MANUAL (campos livres — oculto por padrão) -->
-                        <div id="painelManual" style="display:none">
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="input-group !mb-0">
-                                    <label>IPTU (R$/mês)</label>
-                                    <input type="number" id="iptuMes" value="400"
-                                        class="border-amber-300 bg-white text-center font-bold"
-                                        oninput="calcular()">
-                                </div>
-                                <div class="input-group !mb-0">
-                                    <label>Condomínio (R$/mês)</label>
-                                    <input type="number" id="condMes" value="800"
-                                        class="border-amber-300 bg-white text-center font-bold"
-                                        oninput="calcular()">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Outros custos + Total: sempre visíveis -->
-                        <div class="grid grid-cols-2 gap-2 mt-2">
                             <div class="input-group !mb-0">
-                                <label>Outros Custos Fixos (R$/mês)</label>
-                                <input type="number" id="outroHoldingMes" value="300"
-                                    class="border-amber-300 bg-white text-center"
-                                    oninput="calcular()">
-                            </div>
-                            <div class="input-group !mb-0">
-                                <label>Total calculado (R$)</label>
-                                <input type="text" id="holdingTotalDisplay" readonly
-                                    class="border-amber-200 bg-amber-100/60 text-amber-800 font-black text-center cursor-default text-xs">
+                                <label>Holding/mês (R$)</label>
+                                <input type="number" id="custoHolding" value="1500" class="border-slate-300 bg-white" oninput="calcular()">
                             </div>
                         </div>
-                        <p class="text-[8px] text-amber-600 mt-2 leading-tight" id="holdingPrazoLabel">
-                            Calculado sobre <strong>0 meses</strong> (obra + venda).
-                        </p>
                     </div>
                 </div>
 
@@ -279,7 +209,7 @@
                                 <tr><td>Custo de Mão de Obra (CUB × Área)</td><td class="text-right" id="tabObra">-</td><td class="text-right" id="pObra">-</td></tr>
                                 <tr class="bg-rose-50/40 italic"><td id="descISS">ISS de Obra (3%)</td><td class="text-right" id="tabISS">-</td><td class="text-right" id="pISS">-</td></tr>
                                 <tr class="bg-rose-50/40 italic"><td id="descINSS">INSS de Obra (6%)</td><td class="text-right" id="tabINSS">-</td><td class="text-right" id="pINSS">-</td></tr>
-                                <tr class="bg-rose-50/40 italic"><td>Taxas Cartoriais / Regularização (alvará, habite-se, averbação)</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
+                                <tr class="bg-rose-50/40 italic"><td>Taxas de Regularização / Adm</td><td class="text-right" id="tabTaxasAdm">-</td><td class="text-right" id="pTaxasAdm">-</td></tr>
                                 <tr class="highlight-fin"><td>= BASE DO ATIVO (Custo Total de Produção)</td><td class="text-right" id="tabBaseAtivo">-</td><td class="text-right" id="pBaseAtivo">-</td></tr>
                                 <!-- Financiamento -->
                                 <tr><td colspan="3" class="!p-2 !pt-3 text-[9px] font-black text-blue-600 uppercase tracking-widest">▸ Financiamento bancário</td></tr>
@@ -288,10 +218,7 @@
                                 <tr class="italic text-amber-700"><td>Juros de Estoque / SAC (período de venda)</td><td class="text-right" id="tabJurosVenda">-</td><td class="text-right" id="pJurosVenda">-</td></tr>
                                 <!-- Custos de saída -->
                                 <tr><td colspan="3" class="!p-2 !pt-3 text-[9px] font-black text-blue-600 uppercase tracking-widest">▸ Custos de saída</td></tr>
-                                <tr><td id="descHolding">IPTU + Condomínio + Outros (R$/mês × meses)</td><td class="text-right" id="tabHolding">-</td><td class="text-right" id="pHolding">-</td></tr>
-                                <tr class="text-[11px] text-slate-400 italic"><td id="descIPTU" class="pl-6">↳ IPTU</td><td class="text-right" id="tabIPTU">-</td><td class="text-right" id="pIPTU">-</td></tr>
-                                <tr class="text-[11px] text-slate-400 italic"><td id="descCond" class="pl-6">↳ Condomínio</td><td class="text-right" id="tabCond">-</td><td class="text-right" id="pCond">-</td></tr>
-                                <tr class="text-[11px] text-slate-400 italic"><td id="descOutros" class="pl-6">↳ Outros custos fixos mensais</td><td class="text-right" id="tabOutros">-</td><td class="text-right" id="pOutros">-</td></tr>
+                                <tr><td id="descHolding">Custo de Carregamento / Holding (R$1.500/mês)</td><td class="text-right" id="tabHolding">-</td><td class="text-right" id="pHolding">-</td></tr>
                                 <tr><td>Comissão de Venda</td><td class="text-right" id="tabCom">-</td><td class="text-right" id="pCom">-</td></tr>
                                 <tr class="highlight-tax"><td id="descImposto">Imposto sobre Ganho</td><td class="text-right" id="tabImposto">-</td><td class="text-right" id="pImposto">-</td></tr>
                                 <!-- Resultado -->
@@ -328,41 +255,6 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- ═══ SIMULADOR DE PREÇO MÍNIMO DE VENDA vs TMA ═══ -->
-                <div class="card p-0 overflow-hidden border-slate-300 shadow-lg">
-                    <div class="bg-slate-900 px-6 py-5 flex flex-col md:flex-row md:justify-between md:items-center gap-2">
-                        <div>
-                            <h3 class="text-white font-black uppercase text-[11px] tracking-widest italic">Por Quanto Preciso Vender para Bater minha Meta?</h3>
-                            <p class="text-[9px] text-blue-300 font-bold uppercase tracking-wider mt-0.5">Curva da rentabilidade mensal em função do preço de venda</p>
-                        </div>
-                        <div class="text-left md:text-right bg-emerald-500/10 border border-emerald-500/30 rounded-2xl px-4 py-2">
-                            <p class="text-[8px] text-emerald-300 font-black uppercase tracking-widest">Venda mínima p/ sua TMA</p>
-                            <p id="vendaMinTMA" class="text-2xl font-black text-emerald-400 leading-none">R$ 0</p>
-                        </div>
-                    </div>
-                    <div class="p-6">
-                        <div class="relative h-72"><canvas id="chartVendaMin"></canvas></div>
-                        <div class="grid grid-cols-3 gap-3 mt-5">
-                            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
-                                <p class="text-[8px] font-black text-emerald-600 uppercase tracking-widest mb-1">Venda mínima · TMA</p>
-                                <p id="cardVendaTMA" class="text-base font-black text-emerald-700 leading-tight">R$ 0</p>
-                                <p class="text-[8px] text-emerald-500 font-bold mt-0.5">entrega sua meta</p>
-                            </div>
-                            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-center">
-                                <p class="text-[8px] font-black text-amber-600 uppercase tracking-widest mb-1">Venda mínima · Selic</p>
-                                <p id="cardVendaSelic" class="text-base font-black text-amber-700 leading-tight">R$ 0</p>
-                                <p class="text-[8px] text-amber-500 font-bold mt-0.5">empata c/ renda fixa</p>
-                            </div>
-                            <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3 text-center">
-                                <p class="text-[8px] font-black text-rose-600 uppercase tracking-widest mb-1">Break-even</p>
-                                <p id="cardVendaBreak" class="text-base font-black text-rose-700 leading-tight">R$ 0</p>
-                                <p class="text-[8px] text-rose-500 font-bold mt-0.5">lucro zero</p>
-                            </div>
-                        </div>
-                        <p class="text-[10px] text-slate-400 font-medium italic mt-4 leading-relaxed">A curva mostra como sua rentabilidade mensal sobe conforme o preço de venda aumenta, mantendo custos e prazo fixos. A linha pontilhada marca o <strong class="text-emerald-600">preço mínimo que entrega sua TMA</strong> — vender abaixo disso não justifica o risco da incorporação. A bolinha azul é o seu preço de venda atual.</p>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -374,7 +266,7 @@
                 </div>
                 <div>
                     <h2 class="text-2xl font-black text-white uppercase tracking-tighter italic">Memorial de Critérios & Metodologia de Cálculo</h2>
-                    <p class="text-[10px] text-blue-400 font-black uppercase tracking-[0.2em] mt-0.5">Todos os critérios aplicados nesta simulação — Investment Analysis v2.0</p>
+                    <p class="text-[10px] text-blue-400 font-black uppercase tracking-[0.2em] mt-0.5">Todos os critérios aplicados nesta simulação — Investment Analysis v1.0</p>
                 </div>
             </div>
 
@@ -391,21 +283,7 @@
                         <p><strong class="text-slate-800">ITBI + Registro (% editável, padrão 5%):</strong> incide sobre o valor do terreno. Inclui o imposto municipal de transmissão (ITBI, média 2–3%) e os emolumentos de cartório de registro (0,5–1%). O percentual é editável pois varia por município.</p>
                         <p><strong class="text-slate-800">ISS de Obra (% editável, padrão 3%):</strong> Imposto Sobre Serviços incidente sobre a mão de obra de construção. Alíquota municipal, varia de 2% a 5%. Calculado sobre o custo de mão de obra (CUB × Área).</p>
                         <p><strong class="text-slate-800">INSS de Obra (% editável, padrão 6%):</strong> Contribuição previdenciária patronal sobre a mão de obra. O padrão de 6% corresponde ao regime de desoneração da folha (Lei 12.844/13), aplicável à construção civil. No regime normal, a alíquota patronal pode chegar a 20%.</p>
-                        <p><strong class="text-slate-800">Taxas Cartoriais / Regularização (R$ fixo):</strong> custo único (não mensal) de formalização da obra — alvará de construção, aprovação de projeto, habite-se e averbação. Por ser um desembolso fixo independente do prazo, entra diretamente na <strong>base do ativo</strong> (custo de produção), compondo a base contábil dedutível no regime PF.</p>
-                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900">
-                            <strong>Carregamento Mensal — IPTU + Condomínio + Outros:</strong> despesas fixas pagas todos os meses durante toda a operação (obra + venda). O campo oferece dois modos alternáveis pelo botão:
-                            <ul class="list-disc ml-4 mt-2 space-y-1 text-[10px]">
-                                <li><strong>⚡ Estimar (padrão):</strong> calcula automaticamente a partir de dois parâmetros:
-                                    <ul class="list-disc ml-4 mt-0.5 space-y-0.5">
-                                        <li><em>IPTU</em> = Valor do Terreno × Alíquota (% a.a.) ÷ 12 — padrão 0,5% a.a., editável. Incide sobre o valor venal do terreno durante a obra.</li>
-                                        <li><em>Condomínio</em> = Área útil × R$/m²/mês — padrão R$ 8/m², editável. Base usada pelo mercado em laudos de previsão condominial.</li>
-                                    </ul>
-                                    Os valores são recalculados em tempo real ao mudar terreno, área ou os parâmetros de estimativa.
-                                </li>
-                                <li><strong>✎ Manual:</strong> você digita diretamente IPTU e Condomínio em R$/mês, ideal quando já tem os dados reais do imóvel ou da construtora.</li>
-                            </ul>
-                            Em ambos os modos, o campo <em>Outros custos fixos</em> permanece livre (energia, seguro, vigilância). O total mensal é multiplicado pelo <strong>prazo total (obra + venda)</strong> e entra no fluxo de caixa mês a mês na TIR e na base dedutível do PF.
-                        </div>
+                        <p><strong class="text-slate-800">Taxas de Regularização / Adm (R$ editável):</strong> engloba aprovação de projeto, alvará de construção, habite-se, averbação e demais custos cartorários fixos da incorporação.</p>
                     </div>
                 </div>
 
@@ -420,7 +298,7 @@
                         <p><strong class="text-slate-800">Juros de Obra:</strong> durante a construção, o capital é desembolsado progressivamente ao longo dos meses (medições). O modelo usa a média do saldo devedor para estimar os juros: <code class="bg-slate-100 px-1 rounded">J_obra = SD × i_mensal × prazo_obra / 2</code>. A divisão por 2 captura que, na média, metade do saldo estava exposta aos juros.</p>
                         <p><strong class="text-slate-800">Juros de Estoque (SAC):</strong> após a conclusão da obra, o imóvel fica em estoque até a venda. Aplica-se o Sistema de Amortização Constante (SAC), onde a amortização mensal é fixa (<code class="bg-slate-100 px-1 rounded">A = SD / prazo_total</code>) e os juros incidem sobre o saldo decrescente mês a mês durante o período de venda.</p>
                         <div class="bg-amber-50 border border-amber-200 rounded-xl p-3 text-amber-900">
-                            <strong>Atenção:</strong> os juros de obra e estoque são calculados sobre o saldo devedor bancário (base do ativo menos equity), não sobre o capital próprio. O custo real do financiamento depende da taxa e do prazo — compare com o retorno do projeto antes de alavancar.
+                            <strong>Custo de Carregamento / Holding (R$ editável, padrão R$1.500/mês):</strong> despesas fixas mensais de manutenção do ativo durante toda a operação (IPTU, condomínio, vigilância, energia, seguros). Multiplicado pelo ciclo total (Obra + Venda). Este custo costuma ser esquecido em análises simplistas, distorcendo o lucro real.
                         </div>
                     </div>
                 </div>
@@ -502,80 +380,16 @@
                     </div>
                 </div>
 
-                <!-- 6. PREÇO MÍNIMO DE VENDA -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 py-8">
-                    <div class="md:col-span-3">
-                        <span class="inline-block bg-emerald-600 text-white text-[8px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-2">Preço Mínimo</span>
-                        <h4 class="font-black text-slate-900 text-sm leading-tight">Curva de Rentabilidade vs Preço de Venda</h4>
-                    </div>
-                    <div class="md:col-span-9 space-y-2">
-                        <p>O gráfico de preço mínimo <strong>inverte a lógica da simulação</strong>: em vez de fixar o preço e ver o retorno, ele varre todos os preços de venda possíveis (de ~80% até ~220% do custo de produção) e calcula a TIR mensal de cada um, mantendo fixos todos os custos, prazos e financiamento. O resultado é uma curva ascendente — quanto mais você vende, maior a rentabilidade.</p>
-                        <div class="grid grid-cols-3 gap-3 my-2">
-                            <div class="bg-emerald-50 rounded-xl p-3 border border-emerald-200">
-                                <p class="font-black text-emerald-800 mb-1">Venda mínima · TMA</p>
-                                <p>O menor preço de venda que ainda entrega a sua Taxa Mínima de Atratividade. Vender abaixo disso não remunera o risco da incorporação acima da sua meta.</p>
-                            </div>
-                            <div class="bg-amber-50 rounded-xl p-3 border border-amber-200">
-                                <p class="font-black text-amber-800 mb-1">Venda mínima · Selic</p>
-                                <p>O preço onde a operação empata com a renda fixa sem risco. Abaixo dele, um CDB ou Tesouro Selic teria rendido mais com risco zero.</p>
-                            </div>
-                            <div class="bg-rose-50 rounded-xl p-3 border border-rose-200">
-                                <p class="font-black text-rose-800 mb-1">Break-even</p>
-                                <p>O preço de lucro zero. Vender abaixo disso gera prejuízo contábil — a operação destrói capital.</p>
-                            </div>
-                        </div>
-                        <p>As faixas de cor (verde / âmbar / vermelho) usam o mesmo critério do veredito. A <strong>bolinha azul</strong> marca o preço de venda atual sobre a curva, mostrando instantaneamente quanta margem existe acima do preço mínimo da sua meta.</p>
-                    </div>
-                </div>
-
             </div>
 
             <div class="px-10 py-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center text-[9px] font-bold uppercase tracking-widest text-slate-400">
                 <span>Engenharia Financeira Aplicada</span>
-                <span>Real Estate Investment Framework — v2.0</span>
+                <span>Real Estate Investment Framework — v1.0</span>
             </div>
         </div>
     </div>
 
     <script>
-        // ═══ MODO HOLDING: 'estimar' | 'manual' ═══
-        let modoHolding = 'estimar';
-
-        function setModoHolding(modo) {
-            modoHolding = modo;
-            document.getElementById('painelEstimar').style.display = modo === 'estimar' ? '' : 'none';
-            document.getElementById('painelManual').style.display  = modo === 'manual'  ? '' : 'none';
-            // Botões: ativo = amber sólido, inativo = branco
-            document.getElementById('btnModoEstimar').className =
-                'px-3 py-1.5 transition-all ' + (modo === 'estimar' ? 'bg-amber-500 text-white' : 'bg-white text-amber-600');
-            document.getElementById('btnModoManual').className =
-                'px-3 py-1.5 transition-all ' + (modo === 'manual'  ? 'bg-amber-500 text-white' : 'bg-white text-amber-600');
-            if (modo === 'estimar') estimarHolding();
-            else calcular();
-        }
-
-        // Calcula IPTU e Condomínio estimados e dispara recálculo
-        function estimarHolding() {
-            const vTerreno = parseFloat(document.getElementById('vTerreno').value) || 0;
-            const area     = parseFloat(document.getElementById('area').value)     || 0;
-            const aliq     = parseFloat(document.getElementById('aliqIPTU').value) || 0;
-            const condM2   = parseFloat(document.getElementById('condM2').value)   || 0;
-            const f2 = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-
-            const iptuEst = vTerreno * (aliq / 100) / 12;
-            const condEst = area * condM2;
-
-            // Preenche displays de somente-leitura
-            document.getElementById('iptuMesDisplay').value = f2(iptuEst);
-            document.getElementById('condMesDisplay').value  = f2(condEst);
-
-            // Espelha nos campos numéricos usados pelo calcular()
-            document.getElementById('iptuMes').value = iptuEst.toFixed(2);
-            document.getElementById('condMes').value  = condEst.toFixed(2);
-
-            calcular();
-        }
-
         let chartP = null;
         Chart.register(ChartDataLabels);
 
@@ -610,10 +424,7 @@
                 const pISSv         = parseFloat(document.getElementById('pISS').value)          || 0;
                 const pINSSv        = parseFloat(document.getElementById('pINSS').value)         || 0;
                 const taxasAdm      = parseFloat(document.getElementById('taxasAdm').value)      || 0;
-                // Novos campos de carregamento mensal (substituem o custoHolding único)
-                const iptuMes         = parseFloat(document.getElementById('iptuMes').value)         || 0;
-                const condMes         = parseFloat(document.getElementById('condMes').value)         || 0;
-                const outroHoldingMes = parseFloat(document.getElementById('outroHoldingMes').value) || 0;
+                const custoHolding  = parseFloat(document.getElementById('custoHolding').value)  || 0;
                 const prazoObra     = parseFloat(document.getElementById('prazoObra').value)     || 1;
                 const prazoVenda    = parseFloat(document.getElementById('prazoVenda').value)    || 1;
                 const jurosAnual    = parseFloat(document.getElementById('jurosAnual').value)    || 0;
@@ -629,23 +440,8 @@
                 const taxasAquisicao  = vTerreno * (pAquisicao / 100);
                 const regISS          = custoMaoObra * (pISSv / 100);
                 const regINSS         = custoMaoObra * (pINSSv / 100);
-                // taxasAdm = cartoriais fixas (alvará, habite-se, averbação) → entram na baseAtivo
                 const totalReg        = regISS + regINSS + taxasAdm;
                 const baseAtivo       = vTerreno + taxasAquisicao + custoMaoObra + totalReg;
-
-                // ── Carregamento mensal: IPTU + Condomínio + Outros ────────
-                // Calculado sobre o prazo total (obra + venda) e exibido como preview
-                const prazoTotal      = prazoObra + prazoVenda;
-                const custoHolding    = iptuMes + condMes + outroHoldingMes; // total mensal
-                const totalHolding    = custoHolding * prazoTotal;
-
-                // Preview automático no bloco de inputs
-                const f2 = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-                document.getElementById('holdingTotalDisplay').value = f2(totalHolding);
-                document.getElementById('holdingPrazoLabel').innerHTML =
-                    `IPTU <strong>${f2(iptuMes)}</strong> + Cond. <strong>${f2(condMes)}</strong> + Outros <strong>${f2(outroHoldingMes)}</strong> = `+
-                    `<strong>${f2(custoHolding)}/mês</strong> × <strong>${Math.round(prazoTotal)} meses</strong> `+
-                    `(${Math.round(prazoObra)} obra + ${Math.round(prazoVenda)} venda)`;
 
                 // ── Financiamento ──────────────────────────────────────────
                 const sdInicial  = Math.max(0, baseAtivo - capAporte);
@@ -665,7 +461,7 @@
 
                 // ── Custos de saída ────────────────────────────────────────
                 const comVenda     = vVenda * pComissao;
-                // totalHolding já calculado acima: custoHolding (mensal) × prazoTotal
+                const totalHolding = custoHolding * (prazoObra + prazoVenda);
 
                 // ── Tributação ─────────────────────────────────────────────
                 // Base de custo dedutível para PF
@@ -687,20 +483,18 @@
                 const roeFinanc = totalDesembolsado > 0 ? (lucroLiq / totalDesembolsado) * 100 : 0;
 
                 // TIR — fluxo de caixa real do investidor:
-                //   t0:       -capAporte       (equity colocado na operação)
-                //   t1..tN-1: -custoHolding     (holding pago mensalmente)
-                //   tN:       recebimento final (produto da venda já líquido)
-                // IMPORTANTE: lucroLiq JÁ é líquido de TODOS os custos, inclusive o
-                // holding total. Como o holding também sai mês a mês no fluxo acima,
-                // ele seria contado DUAS VEZES. Para evitar a dupla contagem, o
-                // recebimento final devolve os holdings intermediários já debitados:
-                //   recebimentoFinal = lucroLiq + capAporte + holdingIntermediário
-                // Assim a soma do fluxo de caixa fecha exatamente com o lucroLiq.
+                //   t0:       -capAporte  (equity colocado na operação)
+                //   t1..tN-1: -custoHolding  (holding pago mensalmente)
+                //   tN:       lucroLiq + capAporte
+                //             O investidor recebe o LUCRO + recupera o CAPITAL ORIGINAL
+                //             (na venda: vVenda - comissao - imposto - saldoDevedor - juros
+                //              simplifica para lucroLiq + capAporte porque o equity está
+                //              embutido no custo do ativo que foi financiado+pago pelo banco)
+                //             O holding NÃO entra aqui pois já saiu mês a mês no fluxo
                 const tempoTotal = Math.max(1, Math.round(prazoObra + prazoVenda));
-                const holdingIntermediario = custoHolding * (tempoTotal - 1);
                 const fluxo = [-capAporte];
                 for (let t = 1; t < tempoTotal; t++) fluxo.push(-custoHolding);
-                fluxo.push(lucroLiq + capAporte + holdingIntermediario);
+                fluxo.push(lucroLiq + capAporte);
                 let tirM = calcularTIR(fluxo);
                 if (!isFinite(tirM)) tirM = 0;
                 const tirAa = (Math.pow(1 + tirM / 100, 12) - 1) * 100;
@@ -755,20 +549,9 @@
                 document.getElementById('pJurosObra').innerText    = p(jObra);
                 document.getElementById('tabJurosVenda').innerText = f(jEstoque);
                 document.getElementById('pJurosVenda').innerText   = p(jEstoque);
-                // Holding detalhado: linha-mãe + três sub-itens
-                document.getElementById('descHolding').innerText =
-                    `IPTU + Condomínio + Outros — ${f2(custoHolding)}/mês × ${Math.round(prazoTotal)} meses (${Math.round(prazoObra)} obra + ${Math.round(prazoVenda)} venda)`;
-                document.getElementById('tabHolding').innerText   = f(totalHolding);
-                document.getElementById('pHolding').innerText     = p(totalHolding);
-                document.getElementById('descIPTU').innerText  = `↳ IPTU (${f2(iptuMes)}/mês × ${Math.round(prazoTotal)} meses)`;
-                document.getElementById('tabIPTU').innerText   = f(iptuMes * prazoTotal);
-                document.getElementById('pIPTU').innerText     = p(iptuMes * prazoTotal);
-                document.getElementById('descCond').innerText  = `↳ Condomínio (${f2(condMes)}/mês × ${Math.round(prazoTotal)} meses)`;
-                document.getElementById('tabCond').innerText   = f(condMes * prazoTotal);
-                document.getElementById('pCond').innerText     = p(condMes * prazoTotal);
-                document.getElementById('descOutros').innerText = `↳ Outros custos fixos (${f2(outroHoldingMes)}/mês × ${Math.round(prazoTotal)} meses)`;
-                document.getElementById('tabOutros').innerText  = f(outroHoldingMes * prazoTotal);
-                document.getElementById('pOutros').innerText   = p(outroHoldingMes * prazoTotal);
+                document.getElementById('descHolding').innerText   = `Custo de Carregamento / Holding (R$${custoHolding.toLocaleString('pt-BR')}/mês × ${prazoObra + prazoVenda} meses)`;
+                document.getElementById('tabHolding').innerText    = f(totalHolding);
+                document.getElementById('pHolding').innerText      = p(totalHolding);
                 document.getElementById('tabCom').innerText        = f(comVenda);
                 document.getElementById('pCom').innerText          = p(comVenda);
                 document.getElementById('tabImposto').innerText    = f(impFinal);
@@ -872,220 +655,20 @@
                     }
                 });
 
-                // Atualiza o gráfico de preço mínimo de venda vs TMA
-                atualizarGraficoVendaMin();
-
             } catch (e) { console.error('Erro no cálculo:', e); }
         }
 
-        // ═══ SIMULADOR DE PREÇO MÍNIMO DE VENDA vs TMA ═══
-        let chartVM = null;
+        window.addEventListener('load', () => setTimeout(calcular, 100));
 
-        // Calcula TIR e lucro para um determinado preço de venda,
-        // mantendo todos os custos de produção e financiamento constantes.
-        function metricasParaVenda(vVenda, p) {
-            const comVenda = vVenda * p.pComissao;
-            let imp = 0;
-            if (p.regime === 'PJ') {
-                imp = vVenda * 0.04;
-            } else if (p.regime === 'PF') {
-                imp = Math.max(0, (vVenda - p.baseAtivo - p.jurosTotais - p.totalHolding - comVenda) * 0.15);
-            }
-            const lucroLiq = vVenda - p.baseAtivo - p.jurosTotais - p.totalHolding - comVenda - imp;
-            // Fluxo de caixa corrigido (sem dupla contagem do holding)
-            const holdingInt = p.custoHolding * (p.tempoTotal - 1);
-            const fluxo = [-p.capAporte];
-            for (let t = 1; t < p.tempoTotal; t++) fluxo.push(-p.custoHolding);
-            fluxo.push(lucroLiq + p.capAporte + holdingInt);
-            let tir = 0;
-            if (p.capAporte > 0 && (lucroLiq + p.capAporte) > 0) {
-                tir = calcularTIR(fluxo);
-                if (!isFinite(tir)) tir = 0;
-            } else if (lucroLiq <= 0) {
-                tir = p.capAporte > 0 ? (lucroLiq / p.capAporte) * 100 / p.tempoTotal : -10;
-            }
-            return { tir, lucroLiq };
+        function exportarPDF() {
+            const venda = document.getElementById('venda')?.value || 'simulacao';
+            const tirEl = document.getElementById('resTirAa')?.innerText?.replace('%','').replace(',','.').trim() || '';
+            const date = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
+            const filename = `Analise_Investimento_TIR${tirEl}aa_${date}`;
+            document.title = filename;
+            window.print();
+            setTimeout(() => { document.title = 'Análise de Investimento Imobiliário v2.0'; }, 1000);
         }
-
-        function atualizarGraficoVendaMin() {
-            // Lê todos os inputs atuais
-            const vTerreno     = parseFloat(document.getElementById('vTerreno').value)      || 0;
-            const area         = parseFloat(document.getElementById('area').value)          || 0;
-            const cub          = parseFloat(document.getElementById('cub').value)           || 0;
-            const capAporte    = parseFloat(document.getElementById('capitalProprio').value) || 0;
-            const pAquisicao   = parseFloat(document.getElementById('pAquisicao').value)    || 0;
-            const pISSv        = parseFloat(document.getElementById('pISS').value)          || 0;
-            const pINSSv       = parseFloat(document.getElementById('pINSS').value)         || 0;
-            const taxasAdm     = parseFloat(document.getElementById('taxasAdm').value)      || 0;
-            // Novos campos de holding mensal
-            const iptuMesG         = parseFloat(document.getElementById('iptuMes').value)         || 0;
-            const condMesG         = parseFloat(document.getElementById('condMes').value)         || 0;
-            const outroHoldingMesG = parseFloat(document.getElementById('outroHoldingMes').value) || 0;
-            const custoHolding = iptuMesG + condMesG + outroHoldingMesG;
-            const prazoObra    = parseFloat(document.getElementById('prazoObra').value)     || 1;
-            const prazoVenda   = parseFloat(document.getElementById('prazoVenda').value)    || 1;
-            const jurosAnual   = parseFloat(document.getElementById('jurosAnual').value)    || 0;
-            const prazoTotalFinan = parseFloat(document.getElementById('prazoTotalMeses').value) || 1;
-            const pComissao    = parseFloat(document.getElementById('pComissao').value) / 100 || 0;
-            const tma          = parseFloat(document.getElementById('tmaInput').value)      || 0;
-            const selicAnual   = parseFloat(document.getElementById('selicAnual').value) / 100 || 0;
-            const regime       = document.getElementById('regimeTributario').value;
-            const vVendaAtual  = parseFloat(document.getElementById('venda').value)        || 0;
-
-            const sMen = (Math.pow(1 + selicAnual, 1 / 12) - 1) * 100;
-
-            // Recalcula custos fixos (igual ao calcular())
-            const custoMaoObra   = area * cub;
-            const taxasAquisicao = vTerreno * (pAquisicao / 100);
-            const regISS  = custoMaoObra * (pISSv  / 100);
-            const regINSS = custoMaoObra * (pINSSv / 100);
-            const baseAtivo = vTerreno + taxasAquisicao + custoMaoObra + regISS + regINSS + taxasAdm;
-            const sdInicial = Math.max(0, baseAtivo - capAporte);
-            const jMensal   = jurosAnual / 100 / 12;
-            const jObra     = sdInicial * jMensal * prazoObra / 2;
-            let jEstoque = 0, sdLoop = sdInicial;
-            const amort = prazoTotalFinan > 0 ? sdInicial / prazoTotalFinan : 0;
-            for (let i = 0; i < prazoVenda; i++) { jEstoque += sdLoop * jMensal; sdLoop -= amort; }
-            const jurosTotais  = jObra + jEstoque;
-            const totalHolding = custoHolding * (prazoObra + prazoVenda);
-            const tempoTotal   = Math.max(1, Math.round(prazoObra + prazoVenda));
-
-            const p = { baseAtivo, jurosTotais, totalHolding, custoHolding, tempoTotal, capAporte, pComissao, regime };
-
-            // Eixo X: varre de 80% do baseAtivo até 220% (ou até cobrir o vVendaAtual)
-            const escalaMin = baseAtivo * 0.80;
-            const escalaMax = Math.max(baseAtivo * 2.2, vVendaAtual * 1.1);
-            const passos = 60;
-            const vendas = [], tirs = [];
-            for (let k = 0; k <= passos; k++) {
-                const v = escalaMin + (escalaMax - escalaMin) * k / passos;
-                vendas.push(v);
-                tirs.push(metricasParaVenda(v, p).tir);
-            }
-
-            // Interpolação: acha o preço onde a curva cruza cada benchmark (curva crescente)
-            function vendaParaTir(alvo) {
-                for (let k = 1; k < vendas.length; k++) {
-                    const t0 = tirs[k - 1], t1 = tirs[k];
-                    if (t0 <= alvo && t1 > alvo) {
-                        const fr = (alvo - t0) / (t1 - t0);
-                        return vendas[k - 1] + fr * (vendas[k] - vendas[k - 1]);
-                    }
-                }
-                return null;
-            }
-
-            const vendaTMA   = vendaParaTir(tma);
-            const vendaSelic = vendaParaTir(sMen);
-            const vendaBreak = vendaParaTir(0);
-
-            const f = (v) => v == null ? '—' : v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
-            document.getElementById('vendaMinTMA').innerText   = f(vendaTMA);
-            document.getElementById('cardVendaTMA').innerText  = f(vendaTMA);
-            document.getElementById('cardVendaSelic').innerText= f(vendaSelic);
-            document.getElementById('cardVendaBreak').innerText= f(vendaBreak);
-
-            // TIR do preço atual (bolinha azul)
-            const tirAtual = metricasParaVenda(vVendaAtual, p).tir;
-
-            const ctxVM = document.getElementById('chartVendaMin').getContext('2d');
-            if (chartVM) chartVM.destroy();
-            chartVM = new Chart(ctxVM, {
-                type: 'line',
-                data: {
-                    labels: vendas.map(v => Math.round(v)),
-                    datasets: [
-                        {
-                            label: 'Rentabilidade mensal (TIR)',
-                            data: tirs,
-                            borderWidth: 2,
-                            pointRadius: 0,
-                            tension: 0.25,
-                            fill: false,
-                            segment: {
-                                borderColor: (ctx) => {
-                                    const t = ctx.p1.parsed.y;
-                                    return t >= tma ? '#10b981' : (t >= sMen ? '#f59e0b' : '#f43f5e');
-                                }
-                            }
-                        },
-                        {
-                            // Bolinha azul: preço de venda atual
-                            label: 'Seu preço atual',
-                            data: [{ x: Math.round(vVendaAtual), y: tirAtual }],
-                            type: 'scatter',
-                            pointBackgroundColor: '#2563eb',
-                            pointBorderColor: '#fff',
-                            pointBorderWidth: 2,
-                            pointRadius: 7,
-                            pointHoverRadius: 9
-                        }
-                    ]
-                },
-                options: {
-                    maintainAspectRatio: false,
-                    interaction: { mode: 'index', intersect: false },
-                    scales: {
-                        x: {
-                            type: 'linear',
-                            title: { display: true, text: 'Preço de Venda (R$)', font: { size: 10, weight: 'bold' }, color: '#94a3b8' },
-                            ticks: { font: { size: 9 }, color: '#94a3b8', maxTicksLimit: 7, callback: (v) => 'R$ ' + (v / 1000).toFixed(0) + 'k' },
-                            grid: { color: '#f1f5f9' }
-                        },
-                        y: {
-                            min: Math.min(-2, sMen - 1),
-                            suggestedMax: Math.max(tma, sMen) * 2.5,
-                            title: { display: true, text: 'TIR mensal (%)', font: { size: 10, weight: 'bold' }, color: '#94a3b8' },
-                            ticks: { font: { size: 9 }, color: '#94a3b8', callback: (v) => v.toFixed(1) + '%' },
-                            grid: { color: '#f1f5f9' }
-                        }
-                    },
-                    plugins: {
-                        legend: { display: false },
-                        datalabels: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                title: (items) => 'Venda: ' + f(items[0].parsed.x),
-                                label: (item) => 'Rentab.: ' + item.parsed.y.toFixed(2) + '% a.m.'
-                            }
-                        }
-                    }
-                },
-                plugins: [{
-                    id: 'guiasVenda',
-                    afterDraw: (chart) => {
-                        const { ctx, chartArea, scales } = chart;
-                        const yTMA   = scales.y.getPixelForValue(tma);
-                        const ySelic = scales.y.getPixelForValue(sMen);
-                        ctx.save();
-                        // Linha horizontal TMA
-                        ctx.setLineDash([5, 4]);
-                        ctx.strokeStyle = '#10b981'; ctx.lineWidth = 1.5;
-                        ctx.beginPath(); ctx.moveTo(chartArea.left, yTMA); ctx.lineTo(chartArea.right, yTMA); ctx.stroke();
-                        ctx.fillStyle = '#059669'; ctx.font = 'bold 9px Inter';
-                        ctx.fillText('TMA ' + tma.toFixed(1) + '%', chartArea.left + 4, yTMA - 4);
-                        // Linha horizontal Selic
-                        ctx.strokeStyle = '#f59e0b';
-                        ctx.beginPath(); ctx.moveTo(chartArea.left, ySelic); ctx.lineTo(chartArea.right, ySelic); ctx.stroke();
-                        ctx.fillStyle = '#d97706';
-                        ctx.fillText('Selic ' + sMen.toFixed(2) + '%', chartArea.left + 4, ySelic - 4);
-                        // Linha vertical: preço mínimo da TMA
-                        if (vendaTMA != null) {
-                            const xT = scales.x.getPixelForValue(vendaTMA);
-                            ctx.setLineDash([4, 4]); ctx.strokeStyle = '#0f172a'; ctx.lineWidth = 1.5;
-                            ctx.beginPath(); ctx.moveTo(xT, chartArea.top); ctx.lineTo(xT, chartArea.bottom); ctx.stroke();
-                            ctx.fillStyle = '#0f172a'; ctx.font = 'bold 9px Inter';
-                            ctx.fillText('mín.', xT + 3, chartArea.top + 10);
-                        }
-                        ctx.restore();
-                    }
-                }]
-            });
-        }
-
-        window.addEventListener('load', () => setTimeout(() => {
-            setModoHolding('estimar');
-        }, 100));
     </script>
 </body>
 </html>
