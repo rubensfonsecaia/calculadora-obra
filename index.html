@@ -38,10 +38,10 @@
             .max-w-7xl { max-width: 100% !important; }
             button { display: none !important; }
 
-            /* Gráficos: container e canvas com mesma altura para não sobrar espaço */
-            #chartInvestor { max-height: 230px !important; }
-            .print-chart-wrap { height: 300px !important; }
-            #chartVendaCurva { height: 300px !important; max-height: 300px !important; width: 100% !important; }
+            /* Gráficos: dimensões fixas e moderadas na impressão p/ não escalar fontes */
+            #chartInvestor { max-height: 200px !important; }
+            .print-chart-wrap { height: 240px !important; max-width: 560px !important; margin: 0 auto !important; }
+            #chartVendaCurva { height: 240px !important; max-height: 240px !important; }
 
             /* Garante fundos coloridos nos cards de veredito */
             #vereditoCard { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -870,8 +870,8 @@
                         {
                             label: 'Venda Atual',
                             data: [{ x: vVendaAtual, y: tirAtual }],
-                            pointRadius: 7,
-                            pointHoverRadius: 9,
+                            pointRadius: 6,
+                            pointHoverRadius: 8,
                             backgroundColor: '#2563eb',
                             borderColor: '#fff',
                             borderWidth: 2,
@@ -882,6 +882,7 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
+                    devicePixelRatio: 2,
                     animation: { duration: 400 },
                     scales: {
                         x: {
@@ -987,17 +988,12 @@
             _primeiroCalculo = false;
         });
 
-        // Redimensiona os gráficos ao entrar/sair do modo de impressão
+        // Redimensiona gráficos só ao SAIR da impressão (restaura tamanho de tela)
         function _resizeCharts() {
             try { if (chartP) chartP.resize(); } catch(e) {}
             try { if (chartVenda) chartVenda.resize(); } catch(e) {}
         }
-        if (window.matchMedia) {
-            const mq = window.matchMedia('print');
-            mq.addEventListener ? mq.addEventListener('change', _resizeCharts) : mq.addListener(_resizeCharts);
-        }
-        window.addEventListener('beforeprint', _resizeCharts);
-        window.addEventListener('afterprint', _resizeCharts);
+        window.addEventListener('afterprint', () => setTimeout(_resizeCharts, 100));
 
         function exportarPDF() {
             const rev = window._revisao || 0;
@@ -1005,12 +1001,8 @@
             const date = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
             const filename = `Analise_Viabilidade_Construcao_Rev${rev}_TIR${tirEl}aa_${date}`;
             document.title = filename;
-            // Garante que os gráficos redesenhem no tamanho de impressão
-            _resizeCharts();
-            setTimeout(() => {
-                window.print();
-                setTimeout(() => { document.title = 'Análise de Viabilidade de Construção v2.0'; _resizeCharts(); }, 800);
-            }, 150);
+            window.print();
+            setTimeout(() => { document.title = 'Análise de Viabilidade de Construção v2.0'; }, 1000);
         }
     </script>
 </body>
