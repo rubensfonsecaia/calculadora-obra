@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Análise de Investimento Imobiliário v2.0</title>
+    <title>Análise de Viabilidade de Construção v2.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
@@ -24,28 +24,68 @@
 
         @media print {
             @page { size: A4; margin: 12mm 10mm; }
+
+            *, *::before, *::after {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+
             body { background: #fff !important; font-size: 10px !important; padding: 0 !important; }
             .no-print { display: none !important; }
-            .card { break-inside: avoid; box-shadow: none !important; border: 1px solid #e2e8f0 !important; }
-            input, select { border: none !important; background: transparent !important; padding: 0 !important; }
+            .card { break-inside: avoid; box-shadow: none !important; }
+            input, select { border: none !important; background: transparent !important; padding: 0 2px !important; }
             canvas { max-height: 180px !important; }
             .max-w-7xl { max-width: 100% !important; }
             button { display: none !important; }
+
+            /* Garante fundos coloridos nos cards de veredito */
+            #vereditoCard { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            #statusCard   { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+
+            /* Força cores de texto e fundo nas linhas destacadas */
+            .highlight-fin { background-color: #eff6ff !important; color: #1d4ed8 !important; border-left: 4px solid #2563eb !important; }
+            .highlight-tax { background-color: #fff1f2 !important; color: #be123c !important; }
+            .bg-blue-50    { background-color: #eff6ff !important; }
+            .bg-rose-50    { background-color: #fff1f2 !important; }
+            .bg-emerald-50 { background-color: #ecfdf5 !important; }
+            .bg-amber-50   { background-color: #fffbeb !important; }
+            .bg-slate-900  { background-color: #0f172a !important; }
+            .bg-emerald-500{ background-color: #10b981 !important; }
+            .bg-rose-500   { background-color: #f43f5e !important; }
+            .bg-amber-500  { background-color: #f59e0b !important; }
+            .bg-blue-600   { background-color: #2563eb !important; }
+            .text-white    { color: #ffffff !important; }
+            .text-emerald-400 { color: #34d399 !important; }
+            .text-rose-400    { color: #fb7185 !important; }
+            .text-amber-400   { color: #fbbf24 !important; }
+            .text-blue-600    { color: #2563eb !important; }
+            .text-emerald-600 { color: #059669 !important; }
+            .border-emerald-500 { border-color: #10b981 !important; }
+            .border-rose-500    { border-color: #f43f5e !important; }
+            .border-amber-500   { border-color: #f59e0b !important; }
+            .border-blue-600    { border-color: #2563eb !important; }
+            .border-l-8 { border-left-width: 8px !important; }
         }
     </style>
 </head>
 <body class="p-4 md:p-10 text-slate-800">
     <div class="max-w-7xl mx-auto">
 
-        <header class="mb-10 flex justify-between items-end border-b border-slate-200 pb-8">
+        <header class="mb-10 flex justify-between items-start border-b border-slate-200 pb-8">
             <div>
-                <h1 class="text-3xl font-black text-slate-900 uppercase italic tracking-tighter text-blue-600">Análise de Investimento v2.0</h1>
-                <p class="text-slate-500 text-sm font-medium italic">Simulador Profissional: Incorporação Imobiliária e Alavancagem de Capital</p>
+                <h1 class="text-3xl font-black uppercase italic tracking-tighter leading-tight">
+                    <span class="text-blue-600">Análise de Viabilidade de Construção</span><span class="text-slate-900"> V2.0</span>
+                </h1>
+                <div class="flex items-center gap-3 mt-1">
+                    <p class="text-slate-500 text-sm font-medium italic">Simulador Profissional: Incorporação Imobiliária e Alavancagem de Capital</p>
+                    <span id="revBadge" class="bg-slate-200 text-slate-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shrink-0">Rev. 0</span>
+                </div>
             </div>
-            <div class="text-right hidden md:flex flex-col items-end gap-3">
-                <span class="bg-blue-600 text-white text-[10px] font-bold px-4 py-1.5 rounded-full uppercase tracking-widest italic">Full Engineering Disclosure</span>
-                <button onclick="exportarPDF()" class="no-print bg-slate-900 hover:bg-blue-600 text-white font-black py-2.5 px-5 rounded-2xl shadow-lg transition-all uppercase tracking-widest text-[10px] flex items-center gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-8m0 8l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
+            <div class="flex flex-col items-end gap-2 shrink-0 ml-4">
+                <span class="bg-blue-600 text-white text-[9px] font-bold px-3 py-1 rounded-full uppercase tracking-widest italic hidden md:inline">Full Engineering Disclosure</span>
+                <button onclick="exportarPDF()" class="no-print bg-slate-900 hover:bg-blue-600 text-white font-black py-2.5 px-4 rounded-2xl shadow-lg transition-all uppercase tracking-widest text-[10px] flex items-center gap-2 whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 16v-8m0 8l-3-3m3 3l3-3M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"/></svg>
                     Exportar PDF
                 </button>
             </div>
@@ -195,6 +235,45 @@
                     <p class="text-[10px] text-slate-400 font-medium italic mt-2">A barra azul representa sua TIR mensal. Para valer a pena, deve superar a TMA (sua meta) e, no mínimo, a Selic (custo de oportunidade sem risco).</p>
                 </div>
 
+                <!-- CURVA DE VIABILIDADE DE VENDA -->
+                <div class="card p-0 overflow-hidden shadow-xl border-slate-300">
+                    <div class="bg-slate-900 px-6 py-5">
+                        <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1">Análise de Sensibilidade</p>
+                        <h3 class="text-base font-black text-white uppercase italic tracking-tighter">Qual o Valor Mínimo de Venda para Bater sua Meta?</h3>
+                        <p class="text-[10px] text-slate-400 font-medium mt-0.5 mb-4">Curva da TIR mensal em função do valor de venda — mantendo todos os custos fixos</p>
+                        <!-- Banner de destaque (igual modelo leilão) -->
+                        <div class="bg-emerald-500/10 border border-emerald-500/40 rounded-2xl px-5 py-3">
+                            <p class="text-[9px] font-black text-emerald-400 uppercase tracking-widest mb-0.5">Venda-Piso p/ sua TMA</p>
+                            <p class="text-3xl font-black text-emerald-400 tracking-tight" id="crvDestaqueTMA">R$ —</p>
+                        </div>
+                    </div>
+                    <!-- Gráfico -->
+                    <div class="p-4">
+                        <div class="relative" style="height:280px"><canvas id="chartVendaCurva"></canvas></div>
+                    </div>
+                    <!-- 3 cards de referência ABAIXO do gráfico -->
+                    <div class="grid grid-cols-3 gap-3 px-4 pb-4">
+                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 text-center">
+                            <p class="text-[8px] font-black text-emerald-700 uppercase tracking-widest mb-1 leading-tight">Venda-Piso · TMA</p>
+                            <p class="text-sm md:text-lg font-black text-emerald-600 break-words leading-tight" id="crvVendaTMA">R$ —</p>
+                            <p class="text-[8px] text-emerald-700/70 font-medium mt-0.5">entrega sua meta</p>
+                        </div>
+                        <div class="bg-amber-50 border border-amber-200 rounded-2xl p-3 text-center">
+                            <p class="text-[8px] font-black text-amber-600 uppercase tracking-widest mb-1 leading-tight">Venda-Piso · Selic</p>
+                            <p class="text-sm md:text-lg font-black text-amber-500 break-words leading-tight" id="crvVendaSelic">R$ —</p>
+                            <p class="text-[8px] text-amber-700/70 font-medium mt-0.5">empata c/ renda fixa</p>
+                        </div>
+                        <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3 text-center">
+                            <p class="text-[8px] font-black text-rose-600 uppercase tracking-widest mb-1 leading-tight">Break-Even</p>
+                            <p class="text-sm md:text-lg font-black text-rose-500 break-words leading-tight" id="crvBreakEven">R$ —</p>
+                            <p class="text-[8px] text-rose-700/70 font-medium mt-0.5">lucro zero</p>
+                        </div>
+                    </div>
+                    <div class="px-6 pb-5">
+                        <p class="text-[10px] text-slate-400 font-medium italic">A curva mostra como sua TIR mensal varia conforme o preço de venda, mantendo todos os custos fixos. A linha pontilhada verde marca o <strong class="text-emerald-600">valor mínimo que entrega sua TMA</strong>. O ponto azul é o seu valor de venda atual.</p>
+                    </div>
+                </div>
+
                 <!-- TABELA DE FLUXO -->
                 <div class="card overflow-hidden p-0 border-slate-300 shadow-lg">
                     <div class="bg-slate-900 p-5 text-white font-bold uppercase text-[10px] tracking-widest italic">Análise Dimensional do Fluxo de Caixa</div>
@@ -255,6 +334,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
 
@@ -391,6 +471,7 @@
 
     <script>
         let chartP = null;
+        let chartVenda = null;
         Chart.register(ChartDataLabels);
 
         // TIR via Newton-Raphson — chute inicial 1% (adequado para incorporação)
@@ -655,19 +736,261 @@
                     }
                 });
 
+                // ── Curva de viabilidade de venda ──────────────────────────
+                requestAnimationFrame(() => gerarCurvaVenda({
+                    vTerreno, area, cub, capAporte, pAquisicao, pISSv, pINSSv, taxasAdm,
+                    custoHolding, prazoObra, prazoVenda, jurosAnual,
+                    prazoTotalFinan: prazoTotalFinan,
+                    pComissao, tma, sMen, regime,
+                    vVendaAtual: vVenda
+                }));
+
             } catch (e) { console.error('Erro no cálculo:', e); }
         }
 
-        window.addEventListener('load', () => setTimeout(calcular, 100));
+        function gerarCurvaVenda(params) {
+            const { vTerreno, area, cub, capAporte, pAquisicao, pISSv, pINSSv, taxasAdm,
+                    custoHolding, prazoObra, prazoVenda, jurosAnual, prazoTotalFinan,
+                    pComissao, tma, sMen, regime, vVendaAtual } = params;
+
+            const f = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            const tempoTotal = Math.max(1, Math.round(prazoObra + prazoVenda));
+
+            // Reconstrói custos fixos (independentes do valor de venda)
+            const custoMaoObra   = area * cub;
+            const taxasAquisicao = vTerreno * (pAquisicao / 100);
+            const regISS         = custoMaoObra * (pISSv / 100);
+            const regINSS        = custoMaoObra * (pINSSv / 100);
+            const totalReg       = regISS + regINSS + taxasAdm;
+            const baseAtivo      = vTerreno + taxasAquisicao + custoMaoObra + totalReg;
+            const sdInicial      = Math.max(0, baseAtivo - capAporte);
+            const jMensal        = jurosAnual / 100 / 12;
+            const jObra          = sdInicial * jMensal * prazoObra / 2;
+            let jEstoque = 0, sdLoop = sdInicial;
+            const amort = prazoTotalFinan > 0 ? sdInicial / prazoTotalFinan : 0;
+            for (let i = 0; i < prazoVenda; i++) { jEstoque += sdLoop * jMensal; sdLoop -= amort; }
+            const jurosTotais  = jObra + jEstoque;
+            const totalHolding = custoHolding * tempoTotal;
+
+            function tirParaVenda(vv) {
+                const com    = vv * pComissao;
+                const custoDed = baseAtivo + jurosTotais + totalHolding + com;
+                let imp = 0;
+                if (regime === 'PJ') imp = vv * 0.04;
+                else if (regime === 'PF') imp = Math.max(0, (vv - custoDed) * 0.15);
+                const lucro = vv - custoDed - imp;
+                const fluxo = [-capAporte];
+                for (let t = 1; t < tempoTotal; t++) fluxo.push(-custoHolding);
+                fluxo.push(lucro + capAporte);
+                return calcularTIR(fluxo);
+            }
+
+            // Bissecção para encontrar valor de venda que bate uma TIR alvo
+            function vendaParaTIR(tirAlvo) {
+                let lo = baseAtivo * 0.3, hi = baseAtivo * 5;
+                for (let i = 0; i < 60; i++) {
+                    const mid = (lo + hi) / 2;
+                    if (tirParaVenda(mid) < tirAlvo) lo = mid; else hi = mid;
+                    if (hi - lo < 1) break;
+                }
+                return (lo + hi) / 2;
+            }
+
+            const vendaTMA    = vendaParaTIR(tma);
+            const vendaSelic  = vendaParaTIR(sMen);
+
+            // Break-even real: valor de venda onde lucro líquido = 0
+            function lucroParaVenda(vv) {
+                const com = vv * pComissao;
+                const cd  = baseAtivo + jurosTotais + totalHolding + com;
+                let imp = 0;
+                if (regime === 'PJ') imp = vv * 0.04;
+                else if (regime === 'PF') imp = Math.max(0, (vv - cd) * 0.15);
+                return vv - cd - imp;
+            }
+            let bLo = baseAtivo * 0.3, bHi = baseAtivo * 5;
+            for (let i = 0; i < 60; i++) {
+                const m = (bLo + bHi) / 2;
+                if (lucroParaVenda(m) < 0) bLo = m; else bHi = m;
+                if (bHi - bLo < 1) break;
+            }
+            const vendaBreak = (bLo + bHi) / 2;
+
+            document.getElementById('crvVendaTMA').innerText   = f(vendaTMA);
+            document.getElementById('crvVendaSelic').innerText = f(vendaSelic);
+            document.getElementById('crvBreakEven').innerText  = f(vendaBreak);
+            const elDest = document.getElementById('crvDestaqueTMA');
+            if (elDest) elDest.innerText = f(vendaTMA);
+
+            // Range do gráfico em X: de 70% do break-even até 130% do vendaTMA
+            // garante que o valor de venda atual também caiba no range
+            let vMin = vendaBreak * 0.70;
+            let vMax = vendaTMA  * 1.30;
+            if (vVendaAtual > 0) {
+                vMin = Math.min(vMin, vVendaAtual * 0.85);
+                vMax = Math.max(vMax, vVendaAtual * 1.10);
+            }
+            const pts  = 60;
+            const dataTIR = [];
+            const CLAMP = 30; // teto visual da TIR mensal (%)
+            for (let i = 0; i <= pts; i++) {
+                const vv  = vMin + (vMax - vMin) * (i / pts);
+                let tir = tirParaVenda(vv);
+                if (!isFinite(tir)) tir = CLAMP;
+                tir = Math.max(-5, Math.min(CLAMP, tir)); // limita p/ não estourar eixo
+                dataTIR.push({ x: vv, y: tir });
+            }
+
+            // Ponto atual (também limitado)
+            let tirAtual = tirParaVenda(vVendaAtual);
+            if (!isFinite(tirAtual)) tirAtual = CLAMP;
+            tirAtual = Math.max(-5, Math.min(CLAMP, tirAtual));
+
+            if (chartVenda) chartVenda.destroy();
+            const ctx2 = document.getElementById('chartVendaCurva').getContext('2d');
+            chartVenda = new Chart(ctx2, {
+                type: 'scatter',
+                data: {
+                    datasets: [
+                        {
+                            label: 'TIR Mensal (%)',
+                            data: dataTIR,
+                            showLine: true,
+                            borderColor: '#10b981',
+                            backgroundColor: 'transparent',
+                            borderWidth: 2.5,
+                            pointRadius: 0,
+                            tension: 0.35,
+                            order: 2
+                        },
+                        {
+                            label: 'Venda Atual',
+                            data: [{ x: vVendaAtual, y: tirAtual }],
+                            pointRadius: 7,
+                            pointHoverRadius: 9,
+                            backgroundColor: '#2563eb',
+                            borderColor: '#fff',
+                            borderWidth: 2,
+                            showLine: false,
+                            order: 1
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    animation: { duration: 400 },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            title: { display: true, text: 'Valor de Venda (R$)', font: { size: 10, weight: '700' }, color: '#94a3b8' },
+                            ticks: {
+                                font: { size: 9 }, color: '#94a3b8',
+                                callback: v => 'R$ ' + (v >= 1000000 ? (v/1000000).toFixed(1)+'M' : (v/1000).toFixed(0)+'k')
+                            },
+                            grid: { color: '#f1f5f9' }
+                        },
+                        y: {
+                            suggestedMin: Math.max(-5, Math.floor(Math.min(...dataTIR.map(d=>d.y), tirAtual) - 1)),
+                            suggestedMax: Math.min(30, Math.ceil(Math.max(...dataTIR.map(d=>d.y), tirAtual) + 2)),
+                            title: { display: true, text: 'TIR mensal (%)', font: { size: 10, weight: '700' }, color: '#94a3b8' },
+                            ticks: { font: { size: 9 }, color: '#94a3b8', callback: v => v.toFixed(1) + '%' },
+                            grid: { color: '#f1f5f9' }
+                        }
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        datalabels: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (ctx) => {
+                                    if (ctx.datasetIndex === 1) return ` Venda atual: ${f(ctx.parsed.x)} → TIR ${ctx.parsed.y.toFixed(2)}% a.m.`;
+                                    return ` ${f(ctx.parsed.x)} → TIR ${ctx.parsed.y.toFixed(2)}% a.m.`;
+                                }
+                            }
+                        },
+                        annotation: undefined
+                    }
+                },
+                plugins: [{
+                    id: 'linhasRef',
+                    afterDraw(chart) {
+                        const { ctx, scales: { y } } = chart;
+                        // Linhas HORIZONTAIS marcando níveis de TIR mensal (igual modelo leilão)
+                        const linhas = [
+                            { vy: tma,  cor: '#059669', label: `TMA ${tma.toFixed(1)}%`,    dash: [6,3] },
+                            { vy: sMen, cor: '#d97706', label: `Selic ${sMen.toFixed(2)}%`, dash: [3,3] },
+                            { vy: 0,    cor: '#e11d48', label: 'Break-even (0%)',           dash: [4,4] }
+                        ].filter(l => l.vy >= y.min && l.vy <= y.max);
+
+                        linhas.forEach(({ vy, cor, label, dash }) => {
+                            const py = y.getPixelForValue(vy);
+                            // Linha horizontal pontilhada
+                            ctx.save();
+                            ctx.setLineDash(dash);
+                            ctx.strokeStyle = cor;
+                            ctx.lineWidth = 1.5;
+                            ctx.beginPath();
+                            ctx.moveTo(chart.chartArea.left, py);
+                            ctx.lineTo(chart.chartArea.right, py);
+                            ctx.stroke();
+                            ctx.restore();
+
+                            // Label à esquerda, acima da linha, com fundo branco
+                            ctx.save();
+                            ctx.font = 'bold 9px Inter, sans-serif';
+                            const tw = ctx.measureText(label).width;
+                            const lx = chart.chartArea.left + 4;
+                            ctx.fillStyle = 'rgba(255,255,255,0.92)';
+                            ctx.fillRect(lx - 2, py - 12, tw + 4, 12);
+                            ctx.fillStyle = cor;
+                            ctx.textAlign = 'left';
+                            ctx.fillText(label, lx, py - 3);
+                            ctx.restore();
+                        });
+                    }
+                }]
+            });
+        }
+
+        window.addEventListener('load', () => {
+            // Recupera revisão salva ou inicia em 0
+            const savedRev = parseInt(localStorage.getItem('avc_revisao') || '0');
+            window._revisao = savedRev;
+            atualizarRevBadge();
+            setTimeout(calcular, 100);
+        });
+
+        function atualizarRevBadge() {
+            const badge = document.getElementById('revBadge');
+            if (!badge) return;
+            const r = window._revisao || 0;
+            badge.innerText = `Rev. ${r}`;
+            badge.className = r === 0
+                ? 'bg-slate-200 text-slate-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shrink-0'
+                : 'bg-blue-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest shrink-0';
+        }
+
+        // Incrementa revisão a cada simulação manual (não no load inicial)
+        let _primeiroCalculo = true;
+        const _calcularOriginal = calcular;
+
+        document.querySelector('button[onclick="calcular()"]').addEventListener('click', () => {
+            if (!_primeiroCalculo) {
+                window._revisao = (window._revisao || 0) + 1;
+                localStorage.setItem('avc_revisao', window._revisao);
+                atualizarRevBadge();
+            }
+            _primeiroCalculo = false;
+        });
 
         function exportarPDF() {
-            const venda = document.getElementById('venda')?.value || 'simulacao';
+            const rev = window._revisao || 0;
             const tirEl = document.getElementById('resTirAa')?.innerText?.replace('%','').replace(',','.').trim() || '';
             const date = new Date().toLocaleDateString('pt-BR').replace(/\//g,'-');
-            const filename = `Analise_Investimento_TIR${tirEl}aa_${date}`;
+            const filename = `Analise_Viabilidade_Construcao_Rev${rev}_TIR${tirEl}aa_${date}`;
             document.title = filename;
             window.print();
-            setTimeout(() => { document.title = 'Análise de Investimento Imobiliário v2.0'; }, 1000);
+            setTimeout(() => { document.title = 'Análise de Viabilidade de Construção v2.0'; }, 1000);
         }
     </script>
 </body>
